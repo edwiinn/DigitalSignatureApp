@@ -21,6 +21,7 @@ import android.os.Bundle;
 
 import com.edwiinn.project.R;
 import com.edwiinn.project.ui.base.BaseActivity;
+import com.edwiinn.project.ui.documents.DocumentsActivity;
 import com.edwiinn.project.ui.login.LoginActivity;
 import com.edwiinn.project.ui.main.MainActivity;
 
@@ -53,6 +54,13 @@ public class SplashActivity extends BaseActivity implements SplashMvpView {
         setUnBinder(ButterKnife.bind(this));
 
         mPresenter.onAttach(SplashActivity.this);
+    }
+
+    @Override
+    public void openDocumentsActivity() {
+        Intent intent = DocumentsActivity.getStartIntent(SplashActivity.this);
+        startActivity(intent);
+        finish();
     }
 
     /**

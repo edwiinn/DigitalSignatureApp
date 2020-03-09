@@ -16,6 +16,7 @@
 package com.edwiinn.project.data.network;
 
 import com.edwiinn.project.data.network.model.BlogResponse;
+import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.LoginRequest;
 import com.edwiinn.project.data.network.model.LoginResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
@@ -98,6 +99,14 @@ public class AppApiHelper implements ApiHelper {
                 .addHeaders(mApiHeader.getProtectedApiHeader())
                 .build()
                 .getObjectSingle(OpenSourceResponse.class);
+    }
+
+    @Override
+    public Single<DocumentsResponse> getAllDocuments() {
+        return Rx2AndroidNetworking.get(ApiEndPoint.ENDPOINT_DOCUMENTS)
+                .addHeaders(mApiHeader.getPublicApiHeader())
+                .build()
+                .getObjectSingle(DocumentsResponse.class);
     }
 }
 

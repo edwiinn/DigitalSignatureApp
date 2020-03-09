@@ -80,6 +80,7 @@ public class BlogFragment extends BaseFragment implements
         return view;
     }
 
+
     @Override
     protected void setUp(View view) {
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

@@ -18,6 +18,7 @@ package com.edwiinn.project.data;
 
 import android.content.Context;
 
+import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.$Gson$Types;
@@ -306,5 +307,10 @@ public class AppDataManager implements DataManager {
     @Override
     public Single<OpenSourceResponse> getOpenSourceApiCall() {
         return mApiHelper.getOpenSourceApiCall();
+    }
+
+    @Override
+    public Single<DocumentsResponse> getAllDocuments() {
+        return mApiHelper.getAllDocuments();
     }
 }

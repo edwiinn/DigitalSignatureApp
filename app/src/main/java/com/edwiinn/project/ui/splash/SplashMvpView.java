@@ -23,6 +23,8 @@ import com.edwiinn.project.ui.base.MvpView;
 
 public interface SplashMvpView extends MvpView {
 
+    void openDocumentsActivity();
+
     void openLoginActivity();
 
     void openMainActivity();

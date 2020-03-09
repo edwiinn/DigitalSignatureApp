@@ -41,6 +41,9 @@ public final class ApiEndPoint {
     public static final String ENDPOINT_OPEN_SOURCE = BuildConfig.BASE_URL
             + "/5926c34212000035026871cd";
 
+    public static final String ENDPOINT_DOCUMENTS = BuildConfig.BASE_URL
+            + "/5e626e503000008e004d5a3f";
+
     private ApiEndPoint() {
         // This class is not publicly instantiable
     }

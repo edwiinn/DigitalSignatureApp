@@ -20,12 +20,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 
 import com.edwiinn.project.data.network.model.BlogResponse;
+import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.OpenSourceResponse;
 import com.edwiinn.project.di.ActivityContext;
 import com.edwiinn.project.di.PerActivity;
 import com.edwiinn.project.ui.about.AboutMvpPresenter;
 import com.edwiinn.project.ui.about.AboutMvpView;
 import com.edwiinn.project.ui.about.AboutPresenter;
+import com.edwiinn.project.ui.documents.DocumentsAdapter;
 import com.edwiinn.project.ui.feed.FeedMvpPresenter;
 import com.edwiinn.project.ui.feed.FeedMvpView;
 import com.edwiinn.project.ui.feed.FeedPagerAdapter;
@@ -157,6 +159,11 @@ public class ActivityModule {
     @Provides
     BlogAdapter provideBlogAdapter() {
         return new BlogAdapter(new ArrayList<BlogResponse.Blog>());
+    }
+
+    @Provides
+    DocumentsAdapter provideDocumentsAdapter() {
+        return new DocumentsAdapter(new ArrayList<DocumentsResponse.Document>());
     }
 
     @Provides
