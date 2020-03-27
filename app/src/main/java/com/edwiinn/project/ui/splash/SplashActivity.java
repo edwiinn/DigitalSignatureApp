@@ -18,6 +18,7 @@ package com.edwiinn.project.ui.splash;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.edwiinn.project.R;
 import com.edwiinn.project.ui.base.BaseActivity;

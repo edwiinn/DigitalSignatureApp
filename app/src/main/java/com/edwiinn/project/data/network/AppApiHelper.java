@@ -15,17 +15,25 @@
 
 package com.edwiinn.project.data.network;
 
+
+import android.content.Context;
+import android.util.Log;
+
 import com.edwiinn.project.data.network.model.BlogResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.LoginRequest;
 import com.edwiinn.project.data.network.model.LoginResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
 import com.edwiinn.project.data.network.model.OpenSourceResponse;
+import com.edwiinn.project.di.ApplicationContext;
 import com.rx2androidnetworking.Rx2AndroidNetworking;
+
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -41,6 +49,10 @@ public class AppApiHelper implements ApiHelper {
     public AppApiHelper(ApiHeader apiHeader) {
         mApiHeader = apiHeader;
     }
+
+    @Inject
+    @ApplicationContext
+    Context applicationContext;
 
     @Override
     public ApiHeader getApiHeader() {
@@ -107,6 +119,15 @@ public class AppApiHelper implements ApiHelper {
                 .addHeaders(mApiHeader.getPublicApiHeader())
                 .build()
                 .getObjectSingle(DocumentsResponse.class);
+    }
+
+    @Override
+    public Observable<String> getDocument(String documentName) {
+        Log.d("ctx", applicationContext.getExternalFilesDir(null).toString());
+        return Rx2AndroidNetworking.download(ApiEndPoint.ENDPOINT_DOCUMENTS + "/" + documentName, applicationContext.getExternalFilesDir(null).toString(), documentName)
+                .addHeaders(mApiHeader.getPublicApiHeader())
+                .build()
+                .getDownloadObservable();
     }
 }
 

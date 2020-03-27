@@ -19,6 +19,7 @@ import com.edwiinn.project.di.PerActivity;
 import com.edwiinn.project.di.module.ActivityModule;
 import com.edwiinn.project.ui.about.AboutFragment;
 import com.edwiinn.project.ui.documents.DocumentsActivity;
+import com.edwiinn.project.ui.documents.document.DocumentActivity;
 import com.edwiinn.project.ui.feed.FeedActivity;
 import com.edwiinn.project.ui.feed.blogs.BlogFragment;
 import com.edwiinn.project.ui.feed.opensource.OpenSourceFragment;
@@ -43,6 +44,8 @@ public interface ActivityComponent {
 
     void inject(SplashActivity activity);
 
+    void inject(DocumentActivity activity);
+
     void inject(DocumentsActivity activity);
 
     void inject(FeedActivity activity);
@@ -54,5 +57,4 @@ public interface ActivityComponent {
     void inject(BlogFragment fragment);
 
     void inject(RateUsDialog dialog);
-
 }

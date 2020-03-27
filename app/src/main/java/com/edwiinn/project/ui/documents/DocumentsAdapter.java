@@ -1,5 +1,6 @@
 package com.edwiinn.project.ui.documents;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,15 @@ import butterknife.ButterKnife;
 
 public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
+    private DocumentsPresenter mDocumentsPresenter;
     private List<DocumentsResponse.Document> mDocumentsResponseList;
 
     public DocumentsAdapter(List<DocumentsResponse.Document> documentsResponseList){
         mDocumentsResponseList = documentsResponseList;
+    }
+
+    public void setPresenter(DocumentsPresenter presenter){
+        mDocumentsPresenter = presenter;
     }
 
     @Override
@@ -55,6 +61,10 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @BindView(R.id.title_txt)
         TextView titleTextView;
 
+        @BindView(R.id.item_document)
+        ConstraintLayout documentItemLayout;
+
+        DocumentsResponse.Document document;
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -68,10 +78,20 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         public void onBind(int position){
             super.onBind(position);
 
-            final DocumentsResponse.Document document = mDocumentsResponseList.get(position);
+            this.document = mDocumentsResponseList.get(position);
 
             if (document.getName() != null){
                 titleTextView.setText(document.getName());
+            }
+
+            if (mDocumentsPresenter != null){
+                documentItemLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mDocumentsPresenter.onDocumentClicked(document);
+                    }
+                });
+
             }
         }
     }

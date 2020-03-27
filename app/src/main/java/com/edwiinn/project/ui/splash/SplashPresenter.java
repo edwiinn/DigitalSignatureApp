@@ -15,6 +15,8 @@
 
 package com.edwiinn.project.ui.splash;
 
+import android.os.Handler;
+
 import com.edwiinn.project.R;
 import com.edwiinn.project.data.DataManager;
 import com.edwiinn.project.ui.base.BasePresenter;
@@ -47,45 +49,15 @@ public class SplashPresenter<V extends SplashMvpView> extends BasePresenter<V>
 
         getMvpView().startSyncService();
 
-        getCompositeDisposable().add(getDataManager()
-                .seedDatabaseQuestions()
-                .subscribeOn(getSchedulerProvider().io())
-                .observeOn(getSchedulerProvider().ui())
-                .concatMap(new Function<Boolean, ObservableSource<Boolean>>() {
-                    @Override
-                    public ObservableSource<Boolean> apply(Boolean aBoolean) throws Exception {
-                        return getDataManager().seedDatabaseOptions();
-                    }
-                })
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(Boolean aBoolean) throws Exception {
-                        if (!isViewAttached()) {
-                            return;
-                        }
-                        decideNextActivity();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        if (!isViewAttached()) {
-                            return;
-                        }
-                        getMvpView().onError(R.string.some_error);
-                        decideNextActivity();
-                    }
-                }));
-
-
+        decideNextActivity();
     }
 
     private void decideNextActivity() {
-//        if (getDataManager().getCurrentUserLoggedInMode()
-//                == DataManager.LoggedInMode.LOGGED_IN_MODE_LOGGED_OUT.getType()) {
-//            getMvpView().openLoginActivity();
-//        } else {
-//            getMvpView().openMainActivity();
-//        }
-        getMvpView().openDocumentsActivity();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getMvpView().openDocumentsActivity();
+            }
+        }, 1000);
     }
 }

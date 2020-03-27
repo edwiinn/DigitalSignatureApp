@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.edwiinn.project.R;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.ui.base.BaseActivity;
+import com.edwiinn.project.ui.documents.document.DocumentActivity;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -61,6 +62,7 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
 
     @Override
     protected void setUp() {
+        mDocumentsAdapter.setPresenter(mPresenter);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mDocumentsRecyclerView.setLayoutManager(mLayoutManager);
         mDocumentsRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -71,5 +73,12 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
     @Override
     public void updateDocuments(List<DocumentsResponse.Document> documents) {
         mDocumentsAdapter.addItems(documents);
+    }
+
+    @Override
+    public void openDocumentActvity(DocumentsResponse.Document document) {
+        Intent intent = DocumentActivity.getStartIntent(DocumentsActivity.this);
+        intent.putExtra("document", document);
+        startActivity(intent);
     }
 }

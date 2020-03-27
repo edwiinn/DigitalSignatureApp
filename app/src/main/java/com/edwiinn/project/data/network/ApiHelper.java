@@ -15,6 +15,7 @@
 
 package com.edwiinn.project.data.network;
 
+
 import com.edwiinn.project.data.network.model.BlogResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.LoginRequest;
@@ -22,6 +23,7 @@ import com.edwiinn.project.data.network.model.LoginResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
 import com.edwiinn.project.data.network.model.OpenSourceResponse;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -31,7 +33,6 @@ import io.reactivex.Single;
 public interface ApiHelper {
 
     ApiHeader getApiHeader();
-
 
     Single<LoginResponse> doGoogleLoginApiCall(LoginRequest.GoogleLoginRequest request);
 
@@ -46,4 +47,6 @@ public interface ApiHelper {
     Single<OpenSourceResponse> getOpenSourceApiCall();
 
     Single<DocumentsResponse> getAllDocuments();
+
+    Observable<String> getDocument(String documentName);
 }

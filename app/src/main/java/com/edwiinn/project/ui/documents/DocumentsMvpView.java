@@ -9,4 +9,6 @@ import java.util.List;
 public interface DocumentsMvpView extends MvpView {
 
     void updateDocuments(List<DocumentsResponse.Document> documents);
+
+    void openDocumentActvity(DocumentsResponse.Document document);
 }

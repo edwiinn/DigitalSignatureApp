@@ -40,4 +40,9 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
                     }
                 }));
     }
+
+    @Override
+    public void onDocumentClicked(DocumentsResponse.Document document) {
+        getMvpView().openDocumentActvity(document);
+    }
 }

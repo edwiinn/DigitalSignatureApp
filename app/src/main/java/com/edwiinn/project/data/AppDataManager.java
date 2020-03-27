@@ -313,4 +313,9 @@ public class AppDataManager implements DataManager {
     public Single<DocumentsResponse> getAllDocuments() {
         return mApiHelper.getAllDocuments();
     }
+
+    @Override
+    public Observable<String> getDocument(String documentName) {
+        return mApiHelper.getDocument(documentName);
+    }
 }
