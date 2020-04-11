@@ -17,11 +17,26 @@ package com.edwiinn.project.data.prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.util.Log;
 
 import com.edwiinn.project.data.DataManager;
 import com.edwiinn.project.di.ApplicationContext;
 import com.edwiinn.project.di.PreferenceInfo;
 import com.edwiinn.project.utils.AppConstants;
+
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,6 +63,9 @@ public class AppPreferencesHelper implements PreferencesHelper {
                                 @PreferenceInfo String prefFileName) {
         mPrefs = context.getSharedPreferences(prefFileName, Context.MODE_PRIVATE);
     }
+
+    @Inject
+    KeyPairGenerator mKeyPairGenerator;
 
     @Override
     public Long getCurrentUserId() {
@@ -110,5 +128,50 @@ public class AppPreferencesHelper implements PreferencesHelper {
     @Override
     public void setAccessToken(String accessToken) {
         mPrefs.edit().putString(PREF_KEY_ACCESS_TOKEN, accessToken).apply();
+    }
+
+    @Override
+    public KeyPair getDocumentKeyPair()
+            throws
+            CertificateException,
+            NoSuchAlgorithmException,
+            KeyStoreException,
+            IOException,
+            InvalidAlgorithmParameterException,
+            UnrecoverableEntryException {
+        if(!isDocumentKeyPairAvailable()){
+            return generateDocumentKeyPair();
+        }
+        KeyStore store = KeyStore.getInstance(AppConstants.ANDROID_KEYSTORE);
+        store.load(null);
+
+        KeyStore.Entry entry= store.getEntry(AppConstants.DOCUMENT_KEYALIAS, null);
+        if (entry instanceof KeyStore.PrivateKeyEntry == false) {
+            Log.w("tag", "Not an instance of a PrivateKeyEntry");
+            return null;
+        }
+        KeyStore.PrivateKeyEntry privateKey = (KeyStore.PrivateKeyEntry) entry;
+        Certificate cert = store.getCertificate(AppConstants.DOCUMENT_KEYALIAS);
+        PublicKey publicKey = cert.getPublicKey();
+
+        return new KeyPair(publicKey, privateKey.getPrivateKey());
+    }
+
+    private Boolean isDocumentKeyPairAvailable() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+        KeyStore store = KeyStore.getInstance(AppConstants.ANDROID_KEYSTORE);
+        store.load(null);
+        return store.containsAlias(AppConstants.DOCUMENT_KEYALIAS);
+    }
+
+    private KeyPair generateDocumentKeyPair() throws InvalidAlgorithmParameterException {
+        mKeyPairGenerator.initialize(
+                new KeyGenParameterSpec.Builder(
+                        AppConstants.DOCUMENT_KEYALIAS,
+                        KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_ENCRYPT)
+                        .setDigests(KeyProperties.DIGEST_SHA256)
+                        .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
+                        .setKeySize(2048)
+                        .build());
+        return  mKeyPairGenerator.generateKeyPair();
     }
 }

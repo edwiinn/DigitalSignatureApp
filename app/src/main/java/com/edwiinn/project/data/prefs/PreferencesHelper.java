@@ -17,6 +17,14 @@ package com.edwiinn.project.data.prefs;
 
 import com.edwiinn.project.data.DataManager;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+
 /**
  * Created by janisharali on 27/01/17.
  */
@@ -47,4 +55,5 @@ public interface PreferencesHelper {
 
     void setAccessToken(String accessToken);
 
+    KeyPair getDocumentKeyPair() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidAlgorithmParameterException, UnrecoverableEntryException;
 }

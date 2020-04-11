@@ -17,6 +17,7 @@ package com.edwiinn.project.di.module;
 
 import android.app.Application;
 import android.content.Context;
+import android.security.keystore.KeyProperties;
 
 import com.edwiinn.project.BuildConfig;
 import com.edwiinn.project.R;
@@ -34,6 +35,11 @@ import com.edwiinn.project.di.ApplicationContext;
 import com.edwiinn.project.di.DatabaseInfo;
 import com.edwiinn.project.di.PreferenceInfo;
 import com.edwiinn.project.utils.AppConstants;
+
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
 import javax.inject.Singleton;
 
@@ -124,5 +130,18 @@ public class ApplicationModule {
                 .setDefaultFontPath("fonts/source-sans-pro/SourceSansPro-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build();
+    }
+
+    @Provides
+    KeyPairGenerator provideKeyPairGenerator(){
+        try {
+            return KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, AppConstants.ANDROID_KEYSTORE);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

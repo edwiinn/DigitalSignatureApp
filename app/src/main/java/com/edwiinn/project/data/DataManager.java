@@ -61,4 +61,10 @@ public interface DataManager extends DbHelper, PreferencesHelper, ApiHelper {
             return mType;
         }
     }
+
+    String getDocumentsStorageLocation();
+
+    String getSignedDocumentsStorageLocation();
+
+    String getCertificateLocation();
 }

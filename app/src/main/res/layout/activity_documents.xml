@@ -27,6 +27,7 @@
         android:layout_height="match_parent"
 
 
+        android:fillViewport="true"
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
         <android.support.constraint.ConstraintLayout
@@ -38,7 +39,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/document_recycler"
                 android:layout_width="409dp"
-                android:layout_height="729dp"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

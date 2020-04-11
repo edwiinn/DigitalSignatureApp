@@ -17,11 +17,14 @@ package com.edwiinn.project.data.network;
 
 
 import com.edwiinn.project.data.network.model.BlogResponse;
+import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.LoginRequest;
 import com.edwiinn.project.data.network.model.LoginResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
 import com.edwiinn.project.data.network.model.OpenSourceResponse;
+
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -48,5 +51,7 @@ public interface ApiHelper {
 
     Single<DocumentsResponse> getAllDocuments();
 
-    Observable<String> getDocument(String documentName);
+    Observable<String> getDocument(String documentName, String downloadLocation);
+
+    Observable<String> requestSignCsr(CsrRequest request);
 }

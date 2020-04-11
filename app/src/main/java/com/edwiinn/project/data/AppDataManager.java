@@ -18,6 +18,7 @@ package com.edwiinn.project.data;
 
 import android.content.Context;
 
+import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,7 +40,16 @@ import com.edwiinn.project.di.ApplicationContext;
 import com.edwiinn.project.utils.AppConstants;
 import com.edwiinn.project.utils.CommonUtils;
 
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -89,6 +99,11 @@ public class AppDataManager implements DataManager {
     public void setAccessToken(String accessToken) {
         mPreferencesHelper.setAccessToken(accessToken);
         mApiHelper.getApiHeader().getProtectedApiHeader().setAccessToken(accessToken);
+    }
+
+    @Override
+    public KeyPair getDocumentKeyPair() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableEntryException, InvalidAlgorithmParameterException, IOException {
+        return mPreferencesHelper.getDocumentKeyPair();
     }
 
     @Override
@@ -197,6 +212,21 @@ public class AppDataManager implements DataManager {
         setCurrentUserProfilePicUrl(profilePicPath);
 
         updateApiHeader(userId, accessToken);
+    }
+
+    @Override
+    public String getDocumentsStorageLocation() {
+        return mContext.getExternalFilesDir(null).toString() + "/document";
+    }
+
+    @Override
+    public String getSignedDocumentsStorageLocation() {
+        return mContext.getExternalFilesDir(null).toString() + "/signed-document";
+    }
+
+    @Override
+    public String getCertificateLocation() {
+        return mContext.getExternalFilesDir(null).toString() + "/certificate/certificate.cert";
     }
 
     @Override
@@ -315,7 +345,13 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Observable<String> getDocument(String documentName) {
-        return mApiHelper.getDocument(documentName);
+    public Observable<String> getDocument(String documentName, String downloadLocation) {
+        return mApiHelper.getDocument(documentName, downloadLocation);
     }
+
+    @Override
+    public Observable<String> requestSignCsr(CsrRequest request) {
+        return mApiHelper.requestSignCsr(request);
+    }
+
 }

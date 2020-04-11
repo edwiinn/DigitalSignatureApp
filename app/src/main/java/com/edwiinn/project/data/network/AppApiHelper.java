@@ -20,6 +20,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.edwiinn.project.data.network.model.BlogResponse;
+import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.LoginRequest;
 import com.edwiinn.project.data.network.model.LoginResponse;
@@ -27,6 +28,8 @@ import com.edwiinn.project.data.network.model.LogoutResponse;
 import com.edwiinn.project.data.network.model.OpenSourceResponse;
 import com.edwiinn.project.di.ApplicationContext;
 import com.rx2androidnetworking.Rx2AndroidNetworking;
+
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import java.io.File;
 
@@ -122,12 +125,20 @@ public class AppApiHelper implements ApiHelper {
     }
 
     @Override
-    public Observable<String> getDocument(String documentName) {
-        Log.d("ctx", applicationContext.getExternalFilesDir(null).toString());
-        return Rx2AndroidNetworking.download(ApiEndPoint.ENDPOINT_DOCUMENTS + "/" + documentName, applicationContext.getExternalFilesDir(null).toString(), documentName)
+    public Observable<String> getDocument(String documentName, String downloadLocation) {
+        return Rx2AndroidNetworking.download(ApiEndPoint.ENDPOINT_DOCUMENTS + "/" + documentName, downloadLocation, documentName)
                 .addHeaders(mApiHeader.getPublicApiHeader())
                 .build()
                 .getDownloadObservable();
+    }
+
+    @Override
+    public Observable<String> requestSignCsr(CsrRequest request) {
+        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_CERTIFICATE + "/csr/sign")
+                .addHeaders(mApiHeader.getPublicApiHeader())
+                .addBodyParameter(request)
+                .build()
+                .getStringObservable();
     }
 }
 

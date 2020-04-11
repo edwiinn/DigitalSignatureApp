@@ -20,6 +20,7 @@ import com.edwiinn.project.di.module.ActivityModule;
 import com.edwiinn.project.ui.about.AboutFragment;
 import com.edwiinn.project.ui.documents.DocumentsActivity;
 import com.edwiinn.project.ui.documents.document.DocumentActivity;
+import com.edwiinn.project.ui.documents.document.signer.SignDialog;
 import com.edwiinn.project.ui.feed.FeedActivity;
 import com.edwiinn.project.ui.feed.blogs.BlogFragment;
 import com.edwiinn.project.ui.feed.opensource.OpenSourceFragment;
@@ -57,4 +58,6 @@ public interface ActivityComponent {
     void inject(BlogFragment fragment);
 
     void inject(RateUsDialog dialog);
+
+    void inject(SignDialog signDialog);
 }

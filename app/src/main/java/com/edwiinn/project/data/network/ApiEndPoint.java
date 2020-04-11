@@ -44,6 +44,9 @@ public final class ApiEndPoint {
     public static final String ENDPOINT_DOCUMENTS = BuildConfig.BASE_URL
             + "/documents";
 
+    public static final String ENDPOINT_CERTIFICATE = BuildConfig.BASE_URL
+            + "/certificate";
+
     private ApiEndPoint() {
         // This class is not publicly instantiable
     }

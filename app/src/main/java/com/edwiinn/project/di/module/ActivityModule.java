@@ -28,6 +28,9 @@ import com.edwiinn.project.ui.about.AboutMvpPresenter;
 import com.edwiinn.project.ui.about.AboutMvpView;
 import com.edwiinn.project.ui.about.AboutPresenter;
 import com.edwiinn.project.ui.documents.DocumentsAdapter;
+import com.edwiinn.project.ui.documents.document.signer.SignDialogMvpPresenter;
+import com.edwiinn.project.ui.documents.document.signer.SignDialogMvpView;
+import com.edwiinn.project.ui.documents.document.signer.SignDialogPresenter;
 import com.edwiinn.project.ui.feed.FeedMvpPresenter;
 import com.edwiinn.project.ui.feed.FeedMvpView;
 import com.edwiinn.project.ui.feed.FeedPagerAdapter;
@@ -143,6 +146,12 @@ public class ActivityModule {
     @Provides
     BlogMvpPresenter<BlogMvpView> provideBlogMvpPresenter(
             BlogPresenter<BlogMvpView> presenter) {
+        return presenter;
+    }
+
+    @Provides
+    SignDialogMvpPresenter<SignDialogMvpView> provideSignDialogMvpPresenter(
+            SignDialogPresenter<SignDialogMvpView> presenter) {
         return presenter;
     }
 
