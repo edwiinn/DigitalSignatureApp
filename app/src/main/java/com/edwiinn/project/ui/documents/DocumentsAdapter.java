@@ -1,6 +1,7 @@
 package com.edwiinn.project.ui.documents;
 
 import android.support.constraint.ConstraintLayout;
+import android.support.design.button.MaterialButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +65,9 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @BindView(R.id.item_document)
         ConstraintLayout documentItemLayout;
 
+        @BindView(R.id.upload_btn)
+        MaterialButton uploadButton;
+
         DocumentsResponse.Document document;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -79,6 +83,18 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             super.onBind(position);
 
             this.document = mDocumentsResponseList.get(position);
+
+            if (document.getSigned()) {
+                uploadButton.setVisibility(View.VISIBLE);
+                uploadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mDocumentsPresenter.uploadSignedDocument(document);
+                    }
+                });
+            } else {
+                uploadButton.setVisibility(View.GONE);
+            }
 
             if (document.getName() != null){
                 titleTextView.setText(document.getName());

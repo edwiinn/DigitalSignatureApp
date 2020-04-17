@@ -12,6 +12,7 @@ import android.content.Context;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.edwiinn.project.R;
@@ -36,6 +37,8 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
 
     @Inject
     DocumentsAdapter mDocumentsAdapter;
+
+    private List<DocumentsResponse.Document> mDocuments;
 
     public static Intent getStartIntent(Context context) {
         Intent intent = new Intent(context, DocumentsActivity.class);
@@ -72,6 +75,8 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
 
     @Override
     public void updateDocuments(List<DocumentsResponse.Document> documents) {
+        mDocuments = documents;
+        mPresenter.checkAllDocumentsIsSigned(documents);
         mDocumentsAdapter.addItems(documents);
     }
 
@@ -80,5 +85,14 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
         Intent intent = DocumentActivity.getStartIntent(DocumentsActivity.this);
         intent.putExtra("document", document);
         startActivity(intent);
+    }
+
+    @Override
+    public void onResume() {
+        if (mDocuments != null) {
+            mPresenter.checkAllDocumentsIsSigned(mDocuments);
+            mDocumentsAdapter.notifyDataSetChanged();
+        }
+        super.onResume();
     }
 }

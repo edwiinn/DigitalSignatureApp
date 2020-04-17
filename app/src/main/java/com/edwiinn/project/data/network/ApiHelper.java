@@ -26,6 +26,8 @@ import com.edwiinn.project.data.network.model.OpenSourceResponse;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
+import java.io.File;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -54,4 +56,6 @@ public interface ApiHelper {
     Observable<String> getDocument(String documentName, String downloadLocation);
 
     Observable<String> requestSignCsr(CsrRequest request);
+
+    Observable<String> uploadSignedDocument(File signedDocument);
 }

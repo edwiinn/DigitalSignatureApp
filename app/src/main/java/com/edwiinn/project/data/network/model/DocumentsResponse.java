@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.File;
 import java.util.List;
 
 public class DocumentsResponse {
@@ -38,18 +39,20 @@ public class DocumentsResponse {
 
         @Expose
         @SerializedName("title")
-        private String name;
+        private String mName;
 
         @Expose
         @SerializedName("id")
         private Integer id;
 
+        private Boolean isSigned;
+
         public String getName() {
-            return name;
+            return mName;
         }
 
         public void setName(String name) {
-            this.name = name;
+            this.mName = name;
         }
 
         public Integer getId() {
@@ -60,12 +63,27 @@ public class DocumentsResponse {
             this.id = id;
         }
 
+        public Boolean getSigned() {
+            isSigned = isSigned == null ? false : isSigned;
+            return isSigned;
+        }
+
+        public void setSigned(Boolean signed) {
+            isSigned = signed;
+        }
+
+        public Boolean checkIfDocumentSigned(String folderSrc) {
+            File file = new File(folderSrc, mName);
+            isSigned = file.exists();
+            return file.exists();
+        }
+
         public Document(Parcel in){
             String[] data = new String[2];
 
             in.readStringArray(data);
             this.id = Integer.parseInt(data[0]);
-            this.name = data[1];
+            this.mName = data[1];
         }
 
         public static final Creator<Document> CREATOR = new Creator<Document>() {
@@ -87,7 +105,7 @@ public class DocumentsResponse {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeStringArray(new String[]{this.id.toString(), this.name});
+            dest.writeStringArray(new String[]{this.id.toString(), this.mName});
         }
     }
 }

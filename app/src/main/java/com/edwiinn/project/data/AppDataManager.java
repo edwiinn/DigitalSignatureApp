@@ -42,6 +42,7 @@ import com.edwiinn.project.utils.CommonUtils;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.InvalidAlgorithmParameterException;
@@ -352,6 +353,11 @@ public class AppDataManager implements DataManager {
     @Override
     public Observable<String> requestSignCsr(CsrRequest request) {
         return mApiHelper.requestSignCsr(request);
+    }
+
+    @Override
+    public Observable<String> uploadSignedDocument(File signedDocument) {
+        return mApiHelper.uploadSignedDocument(signedDocument);
     }
 
 }

@@ -57,7 +57,7 @@ public class MvpApp extends Application {
 
         AndroidNetworking.initialize(getApplicationContext());
         if (BuildConfig.DEBUG) {
-            AndroidNetworking.enableLogging(Level.BODY);
+            AndroidNetworking.enableLogging(Level.BASIC);
         }
 
         CalligraphyConfig.initDefault(mCalligraphyConfig);

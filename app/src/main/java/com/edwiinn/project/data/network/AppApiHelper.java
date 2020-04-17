@@ -140,5 +140,14 @@ public class AppApiHelper implements ApiHelper {
                 .build()
                 .getStringObservable();
     }
+
+    @Override
+    public Observable<String> uploadSignedDocument(File signedDocument) {
+        return Rx2AndroidNetworking.upload(ApiEndPoint.ENDPOINT_SIGNED_DOCUMENTS)
+                .addHeaders(mApiHeader.getPublicApiHeader())
+                .addMultipartFile("document", signedDocument)
+                .build()
+                .getStringObservable();
+    }
 }
 
