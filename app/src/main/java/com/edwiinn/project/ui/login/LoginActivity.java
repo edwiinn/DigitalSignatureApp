@@ -18,16 +18,19 @@ package com.edwiinn.project.ui.login;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.EditText;
 
 import com.edwiinn.project.R;
 import com.edwiinn.project.ui.base.BaseActivity;
-import com.edwiinn.project.ui.main.MainActivity;
+import com.edwiinn.project.ui.documents.DocumentsActivity;
+import com.edwiinn.project.ui.splash.SplashActivity;
+
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationResponse;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -38,14 +41,10 @@ import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity implements LoginMvpView {
 
+    private static final String USED_INTENT = "used_intent";
+
     @Inject
     LoginMvpPresenter<LoginMvpView> mPresenter;
-
-    @BindView(R.id.et_email)
-    EditText mEmailEditText;
-
-    @BindView(R.id.et_password)
-    EditText mPasswordEditText;
 
     public static Intent getStartIntent(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
@@ -64,27 +63,9 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         mPresenter.onAttach(LoginActivity.this);
     }
 
-    @OnClick(R.id.btn_server_login)
-    void onServerLoginClick(View v) {
-        mPresenter.onServerLoginClick(mEmailEditText.getText().toString(),
-                mPasswordEditText.getText().toString());
-    }
-
-    @OnClick(R.id.ib_google_login)
+    @OnClick(R.id.google_login_btn)
     void onGoogleLoginClick(View v) {
         mPresenter.onGoogleLoginClick();
-    }
-
-    @OnClick(R.id.ib_fb_login)
-    void onFbLoginClick(View v) {
-        mPresenter.onFacebookLoginClick();
-    }
-
-    @Override
-    public void openMainActivity() {
-        Intent intent = MainActivity.getStartIntent(LoginActivity.this);
-        startActivity(intent);
-        finish();
     }
 
     @Override
@@ -96,5 +77,46 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     @Override
     protected void setUp() {
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        checkIntent(intent);
+    }
+
+    private void checkIntent(@Nullable Intent intent) {
+        if (intent != null) {
+            String action = intent.getAction();
+            if (action == null) return;
+            switch (action) {
+                case "com.edwiinn.project.HANDLE_AUTHORIZATION_RESPONSE":
+                    if (!intent.hasExtra(USED_INTENT)) {
+                        handleAuthorizationResponse(intent);
+                        intent.putExtra(USED_INTENT, true);
+                    }
+                    break;
+                default:
+                    // do nothing
+            }
+        }
+    }
+
+    private void handleAuthorizationResponse(Intent intent) {
+        AuthorizationResponse response = AuthorizationResponse.fromIntent(intent);
+        AuthorizationException exception = AuthorizationException.fromIntent(intent);
+        mPresenter.doGoogleRequestToken(response, exception);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkIntent(getIntent());
+    }
+
+    @Override
+    public void openDocumentsActivity() {
+        Intent intent = DocumentsActivity.getStartIntent(LoginActivity.this);
+        startActivity(intent);
+        finish();
     }
 }

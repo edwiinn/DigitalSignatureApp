@@ -28,13 +28,17 @@ import com.edwiinn.project.data.db.DbHelper;
 import com.edwiinn.project.data.network.ApiHeader;
 import com.edwiinn.project.data.network.ApiHelper;
 import com.edwiinn.project.data.network.AppApiHelper;
+import com.edwiinn.project.data.prefs.AppAuthStateManager;
 import com.edwiinn.project.data.prefs.AppPreferencesHelper;
+import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.edwiinn.project.data.prefs.PreferencesHelper;
 import com.edwiinn.project.di.ApiInfo;
 import com.edwiinn.project.di.ApplicationContext;
 import com.edwiinn.project.di.DatabaseInfo;
 import com.edwiinn.project.di.PreferenceInfo;
 import com.edwiinn.project.utils.AppConstants;
+
+import net.openid.appauth.AuthorizationService;
 
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -99,6 +103,12 @@ public class ApplicationModule {
     @Singleton
     DbHelper provideDbHelper(AppDbHelper appDbHelper) {
         return appDbHelper;
+    }
+
+    @Provides
+    @Singleton
+    AuthStateManager provideAuthStateManager(AppAuthStateManager authStateManager){
+        return authStateManager;
     }
 
     @Provides

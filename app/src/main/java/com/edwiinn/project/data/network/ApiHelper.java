@@ -16,15 +16,10 @@
 package com.edwiinn.project.data.network;
 
 
-import com.edwiinn.project.data.network.model.BlogResponse;
 import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
-import com.edwiinn.project.data.network.model.LoginRequest;
-import com.edwiinn.project.data.network.model.LoginResponse;
+import com.edwiinn.project.data.network.model.GoogleResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
-import com.edwiinn.project.data.network.model.OpenSourceResponse;
-
-import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import java.io.File;
 
@@ -39,17 +34,7 @@ public interface ApiHelper {
 
     ApiHeader getApiHeader();
 
-    Single<LoginResponse> doGoogleLoginApiCall(LoginRequest.GoogleLoginRequest request);
-
-    Single<LoginResponse> doFacebookLoginApiCall(LoginRequest.FacebookLoginRequest request);
-
-    Single<LoginResponse> doServerLoginApiCall(LoginRequest.ServerLoginRequest request);
-
     Single<LogoutResponse> doLogoutApiCall();
-
-    Single<BlogResponse> getBlogApiCall();
-
-    Single<OpenSourceResponse> getOpenSourceApiCall();
 
     Single<DocumentsResponse> getAllDocuments();
 
@@ -58,4 +43,6 @@ public interface ApiHelper {
     Observable<String> requestSignCsr(CsrRequest request);
 
     Observable<String> uploadSignedDocument(File signedDocument);
+
+    Single<GoogleResponse.UserInfo> getGoogleUserInformation();
 }

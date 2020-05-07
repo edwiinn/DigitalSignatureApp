@@ -56,7 +56,7 @@ public class SplashPresenter<V extends SplashMvpView> extends BasePresenter<V>
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getMvpView().openDocumentsActivity();
+                getMvpView().openLoginActivity();
             }
         }, 1000);
     }

@@ -18,13 +18,11 @@ package com.edwiinn.project.ui.splash;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 
 import com.edwiinn.project.R;
 import com.edwiinn.project.ui.base.BaseActivity;
 import com.edwiinn.project.ui.documents.DocumentsActivity;
 import com.edwiinn.project.ui.login.LoginActivity;
-import com.edwiinn.project.ui.main.MainActivity;
 
 import javax.inject.Inject;
 
@@ -70,13 +68,6 @@ public class SplashActivity extends BaseActivity implements SplashMvpView {
     @Override
     public void openLoginActivity() {
         Intent intent = LoginActivity.getStartIntent(SplashActivity.this);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    public void openMainActivity() {
-        Intent intent = MainActivity.getStartIntent(SplashActivity.this);
         startActivity(intent);
         finish();
     }

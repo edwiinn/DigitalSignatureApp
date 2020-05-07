@@ -19,6 +19,9 @@ package com.edwiinn.project.ui.login;
 import com.edwiinn.project.di.PerActivity;
 import com.edwiinn.project.ui.base.MvpPresenter;
 
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationResponse;
+
 /**
  * Created by janisharali on 27/01/17.
  */
@@ -26,10 +29,15 @@ import com.edwiinn.project.ui.base.MvpPresenter;
 @PerActivity
 public interface LoginMvpPresenter<V extends LoginMvpView> extends MvpPresenter<V> {
 
-    void onServerLoginClick(String email, String password);
-
     void onGoogleLoginClick();
 
-    void onFacebookLoginClick();
+    void doGoogleRequestAuth();
 
+    void doGoogleRequestToken(AuthorizationResponse response, AuthorizationException error);
+
+    void loadGoogleUserInfo();
+
+    void doGoogleRequestFreshToken();
+
+    void onLoadCertificate();
 }

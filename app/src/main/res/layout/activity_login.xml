@@ -13,8 +13,9 @@
   ~ limitations under the License
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,118 +24,60 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="80dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="64dp"
         app:cardCornerRadius="7dp"
-        app:cardElevation="22dp">
+        app:cardElevation="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            style="@style/TextStyle.Heading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|top"
-            android:layout_marginTop="60dp"
-            android:text="@string/login_dummy"
-            android:textAllCaps="true"
-            android:textSize="20sp" />
-
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textView"
+                style="@style/TextStyle.Heading"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/gray"
-                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/et_email"
-                    style="@style/TextStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/input_border_bottom"
-                    android:cursorVisible="true"
-                    android:gravity="center|left|bottom"
-                    android:hint="@string/email"
-                    android:inputType="textEmailAddress"
-                    android:maxLength="50"
-                    android:paddingBottom="10dp"
-                    android:textColor="@color/black_effective"
-                    android:textSize="18sp" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/password"
-                android:textColorHint="@color/gray"
-                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
-                app:passwordToggleEnabled="true">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/et_password"
-                    style="@style/TextStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="30dp"
-                    android:background="@drawable/input_border_bottom"
-                    android:cursorVisible="true"
-                    android:gravity="center|left|bottom"
-                    android:inputType="textPassword"
-                    android:maxLength="50"
-                    android:paddingBottom="10dp"
-                    android:textColor="@color/black_effective"
-                    android:textSize="18sp" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:id="@+id/btn_server_login"
-                style="@style/Button.Primary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="15dp"
-                android:padding="10dp"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="32dp"
                 android:text="@string/login"
-                android:textSize="18dp" />
-        </LinearLayout>
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:layout_marginBottom="40dp"
-            android:orientation="horizontal">
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="64dp"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView">
 
-            <ImageButton
-                android:id="@+id/ib_google_login"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@color/transparent"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/ic_google_plus" />
+                <Button
+                    android:id="@+id/google_login_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:layout_height="match_parent"
 
-            <ImageButton
-                android:id="@+id/ib_fb_login"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="24dp"
-                android:background="@color/transparent"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/ic_facebook" />
-        </LinearLayout>
+                    android:text="Google Login"
+                    android:textColor="@color/colorAccent"/>
+            </android.support.v7.widget.CardView>
+
+        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

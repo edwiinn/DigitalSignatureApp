@@ -15,19 +15,49 @@
 
 package com.edwiinn.project.ui.login;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.androidnetworking.error.ANError;
+import com.edwiinn.project.BuildConfig;
 import com.edwiinn.project.R;
 import com.edwiinn.project.data.DataManager;
+import com.edwiinn.project.data.network.ApiEndPoint;
+import com.edwiinn.project.data.network.model.CsrRequest;
+import com.edwiinn.project.data.network.model.GoogleResponse;
 import com.edwiinn.project.data.network.model.LoginRequest;
 import com.edwiinn.project.data.network.model.LoginResponse;
+import com.edwiinn.project.di.ActivityContext;
 import com.edwiinn.project.ui.base.BasePresenter;
 import com.edwiinn.project.utils.CommonUtils;
+import com.edwiinn.project.utils.CsrUtils;
 import com.edwiinn.project.utils.rx.SchedulerProvider;
+
+import net.openid.appauth.AuthState;
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationRequest;
+import net.openid.appauth.AuthorizationResponse;
+import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.AuthorizationServiceConfiguration;
+import net.openid.appauth.TokenResponse;
+
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.security.KeyPair;
 
 import javax.inject.Inject;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * Created by janisharali on 27/01/17.
@@ -39,160 +69,229 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
     private static final String TAG = "LoginPresenter";
 
     @Inject
+    @ActivityContext
+    Context mActivityContext;
+
+    @Inject
     public LoginPresenter(DataManager dataManager,
                           SchedulerProvider schedulerProvider,
                           CompositeDisposable compositeDisposable) {
         super(dataManager, schedulerProvider, compositeDisposable);
     }
 
+    @Inject
+    @ActivityContext
+    AuthorizationService mAuthorizationService;
+
     @Override
-    public void onServerLoginClick(String email, String password) {
-        //validate email and password
-        if (email == null || email.isEmpty()) {
-            getMvpView().onError(R.string.empty_email);
-            return;
-        }
-        if (!CommonUtils.isEmailValid(email)) {
-            getMvpView().onError(R.string.invalid_email);
-            return;
-        }
-        if (password == null || password.isEmpty()) {
-            getMvpView().onError(R.string.empty_password);
-            return;
-        }
-        getMvpView().showLoading();
+    public void onAttach(V mvpView) {
+        super.onAttach(mvpView);
 
-        getCompositeDisposable().add(getDataManager()
-                .doServerLoginApiCall(new LoginRequest.ServerLoginRequest(email, password))
-                .subscribeOn(getSchedulerProvider().io())
-                .observeOn(getSchedulerProvider().ui())
-                .subscribe(new Consumer<LoginResponse>() {
-                    @Override
-                    public void accept(LoginResponse response) throws Exception {
-                        getDataManager().updateUserInfo(
-                                response.getAccessToken(),
-                                response.getUserId(),
-                                DataManager.LoggedInMode.LOGGED_IN_MODE_SERVER,
-                                response.getUserName(),
-                                response.getUserEmail(),
-                                response.getGoogleProfilePicUrl());
-
-                        if (!isViewAttached()) {
-                            return;
-                        }
-
-                        getMvpView().hideLoading();
-                        getMvpView().openMainActivity();
-
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                        if (!isViewAttached()) {
-                            return;
-                        }
-
-                        getMvpView().hideLoading();
-
-                        // handle the login error here
-                        if (throwable instanceof ANError) {
-                            ANError anError = (ANError) throwable;
-                            handleApiError(anError);
-                        }
-                    }
-                }));
+        decideNextActivity();
     }
 
     @Override
     public void onGoogleLoginClick() {
-        // instruct LoginActivity to initiate google login
         getMvpView().showLoading();
-
-        getCompositeDisposable().add(getDataManager()
-                .doGoogleLoginApiCall(new LoginRequest.GoogleLoginRequest("test1", "test1"))
-                .subscribeOn(getSchedulerProvider().io())
-                .observeOn(getSchedulerProvider().ui())
-                .subscribe(new Consumer<LoginResponse>() {
-                    @Override
-                    public void accept(LoginResponse response) throws Exception {
-                        getDataManager().updateUserInfo(
-                                response.getAccessToken(),
-                                response.getUserId(),
-                                DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
-                                response.getUserName(),
-                                response.getUserEmail(),
-                                response.getGoogleProfilePicUrl());
-
-                        if (!isViewAttached()) {
-                            return;
-                        }
-
-                        getMvpView().hideLoading();
-                        getMvpView().openMainActivity();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                        if (!isViewAttached()) {
-                            return;
-                        }
-
-                        getMvpView().hideLoading();
-
-                        // handle the login error here
-                        if (throwable instanceof ANError) {
-                            ANError anError = (ANError) throwable;
-                            handleApiError(anError);
-                        }
-                    }
-                }));
+        try {
+            doGoogleRequestAuth();
+            getMvpView().hideLoading();
+        } catch (Exception ex){
+            getMvpView().hideLoading();
+            getMvpView().showMessage(ex.getMessage());
+        }
     }
 
     @Override
-    public void onFacebookLoginClick() {
-        // instruct LoginActivity to initiate facebook login
+    public void doGoogleRequestAuth() {
+        try {
+            String clientId = BuildConfig.GOOGLE_CLIENT_ID;
+            Uri redirectUri = Uri.parse("com.edwiinn.project:/oauth2callback");
+            AuthorizationServiceConfiguration serviceConfiguration = new AuthorizationServiceConfiguration(
+                    Uri.parse(ApiEndPoint.ENDPOINT_GOOGLE_LOGIN_AUTH),
+                    Uri.parse(ApiEndPoint.ENDPOINT_GOOGLE_LOGIN_TOKEN)
+            );
+            AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(
+                    serviceConfiguration,
+                    clientId,
+                    AuthorizationRequest.RESPONSE_TYPE_CODE,
+                    redirectUri
+            );
+            builder.setScopes("profile");
+            AuthorizationRequest request = builder.build();
+            String action = "com.edwiinn.project.HANDLE_AUTHORIZATION_RESPONSE";
+            Intent postAuthorizationIntent = new Intent(action);
+            postAuthorizationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(mActivityContext, request.hashCode(), postAuthorizationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            mAuthorizationService.performAuthorizationRequest(request, pendingIntent);
+            getMvpView().hideLoading();
+        } catch (Exception exception) {
+            getMvpView().hideLoading();
+            getMvpView().showMessage(exception.getMessage());
+        }
+    }
+
+    @Override
+    public void doGoogleRequestToken(AuthorizationResponse response, AuthorizationException error) {
         getMvpView().showLoading();
-
-        getCompositeDisposable().add(getDataManager()
-                .doFacebookLoginApiCall(new LoginRequest.FacebookLoginRequest("test3", "test4"))
-                .subscribeOn(getSchedulerProvider().io())
-                .observeOn(getSchedulerProvider().ui())
-                .subscribe(new Consumer<LoginResponse>() {
-                    @Override
-                    public void accept(LoginResponse response) throws Exception {
-                        getDataManager().updateUserInfo(
-                                response.getAccessToken(),
-                                response.getUserId(),
-                                DataManager.LoggedInMode.LOGGED_IN_MODE_FB,
-                                response.getUserName(),
-                                response.getUserEmail(),
-                                response.getGoogleProfilePicUrl());
-
-                        if (!isViewAttached()) {
-                            return;
-                        }
-
+        try {
+            final AuthState authState = getDataManager().getCurrentAuthState();
+            mAuthorizationService.performTokenRequest(response.createTokenExchangeRequest(), new AuthorizationService.TokenResponseCallback() {
+                @Override
+                public void onTokenRequestCompleted(@Nullable TokenResponse tokenResponse, @Nullable AuthorizationException exception) {
+                    if (exception != null) {
+                        Log.w("Token", "Token Exchange failed", exception);
+                        getMvpView().onError(exception.errorDescription);
                         getMvpView().hideLoading();
-                        getMvpView().openMainActivity();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                        if (!isViewAttached()) {
-                            return;
-                        }
-
-                        getMvpView().hideLoading();
-
-                        // handle the login error here
-                        if (throwable instanceof ANError) {
-                            ANError anError = (ANError) throwable;
-                            handleApiError(anError);
+                    } else {
+                        if (tokenResponse != null) {
+                            Log.d("Acess Token", tokenResponse.accessToken);
+                            getDataManager().updateUserInfo(
+                                    "Bearer " + tokenResponse.accessToken,
+                                    tokenResponse.idToken,
+                                    DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
+                                    null,
+                                    null,
+                                    null);
+                            getMvpView().hideLoading();
+                            getDataManager().updateAuthState(tokenResponse, exception);
+                            loadGoogleUserInfo();
                         }
                     }
-                }));
+                }
+            });
+        } catch (Exception exception) {
+            getMvpView().hideLoading();
+            getMvpView().onError(exception.getMessage());
+        }
+    }
+
+    @Override
+    public void loadGoogleUserInfo() {
+        getMvpView().showLoading();
+        try {
+            getCompositeDisposable().add(getDataManager()
+                    .getGoogleUserInformation()
+                    .subscribeOn(getSchedulerProvider().io())
+                    .observeOn(getSchedulerProvider().ui())
+                    .subscribe(new Consumer<GoogleResponse.UserInfo>() {
+                        @Override
+                        public void accept(GoogleResponse.UserInfo userInfo) throws Exception {
+                            getDataManager().updateUserInfo(
+                                    getDataManager().getAccessToken(),
+                                    getDataManager().getCurrentUserId(),
+                                    DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
+                                    userInfo.getName(),
+                                    null,
+                                    null
+                            );
+                            onLoadCertificate();
+                            getMvpView().hideLoading();
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@NonNull Throwable throwable)
+                                throws Exception {
+                            if (!isViewAttached()) {
+                                return;
+                            }
+
+                            getMvpView().hideLoading();
+
+                            // handle the error here
+                            if (throwable instanceof ANError) {
+                                ANError anError = (ANError) throwable;
+                                handleApiError(anError);
+                            }
+                        }
+                    }));
+        } catch (Exception exception){
+            getMvpView().onError(exception.getMessage());
+        }
+    }
+
+    @Override
+    public void doGoogleRequestFreshToken() {
+        AuthState authState = getDataManager().getCurrentAuthState();
+        authState.performActionWithFreshTokens(mAuthorizationService, new AuthState.AuthStateAction() {
+            @Override
+            public void execute(@Nullable String accessToken, @Nullable String idToken, @Nullable AuthorizationException exception) {
+                if (exception != null){
+                    getMvpView().onError(exception.getMessage());
+                    return;
+                }
+
+                getDataManager().updateUserInfo(
+                        accessToken,
+                        idToken,
+                        DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
+                        getDataManager().getCurrentUserName(),
+                        null,
+                        null
+                );
+            }
+        });
+    }
+
+    @Override
+    public void onLoadCertificate() {
+        getMvpView().showLoading();
+        File file = new File(getDataManager().getCertificateLocation());
+        if(file.exists()) file.delete();
+
+        try {
+            KeyPair keyPair = getDataManager().getDocumentKeyPair();
+            PKCS10CertificationRequest csr = CsrUtils.generateCSR(keyPair, getDataManager().getCurrentUserName(), "ITS", "Informatika");
+            CsrRequest request = new CsrRequest(CsrUtils.toBase64Format(csr));
+            getCompositeDisposable().add(getDataManager()
+                    .requestSignCsr(request)
+                    .subscribeOn(getSchedulerProvider().io())
+                    .observeOn(getSchedulerProvider().ui())
+                    .subscribeWith(new DisposableObserver<String>() {
+                        @Override
+                        public void onNext(String s) {
+                            File file = new File(getDataManager().getCertificateLocation());
+                            try {
+                                if (!file.exists()){
+                                    file.getParentFile().mkdir();
+                                    file.createNewFile();
+                                }
+                                FileWriter fileWriter = new FileWriter(file, true);
+                                fileWriter.append(s);
+                                fileWriter.flush();
+                                fileWriter.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                getMvpView().showMessage(e.getMessage());
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            getMvpView().onError(e.getMessage());
+                            getMvpView().hideLoading();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            getMvpView().hideLoading();
+                            decideNextActivity();
+                        }
+                    })
+            );
+        } catch (Exception exception) {
+            getMvpView().showMessage(exception.getMessage());
+            getMvpView().hideLoading();
+        }
+    }
+
+    private void decideNextActivity(){
+        if (
+            getDataManager().getCurrentUserLoggedInMode() != DataManager.LoggedInMode.LOGGED_IN_MODE_LOGGED_OUT.getType() &&
+            new File(getDataManager().getCertificateLocation()).exists()
+        ) {
+            getMvpView().openDocumentsActivity();
+        }
     }
 }

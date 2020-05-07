@@ -23,5 +23,6 @@ import com.edwiinn.project.ui.base.MvpView;
 
 public interface LoginMvpView extends MvpView {
 
-    void openMainActivity();
+    void openDocumentsActivity();
+
 }

@@ -56,7 +56,6 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
     public void checkAllDocumentsIsSigned(List<DocumentsResponse.Document> documents) {
         for (DocumentsResponse.Document document: documents) {
             document.checkIfDocumentSigned(getDataManager().getSignedDocumentsStorageLocation());
-            Log.d("signed", document.getSigned().toString());
         }
     }
 
@@ -102,5 +101,12 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
             getMvpView().hideLoading();
             getMvpView().showMessage(e.getMessage());
         }
+    }
+
+    @Override
+    public void onLogoutClick() {
+        getDataManager().clearAuthState();
+        getDataManager().setUserAsLoggedOut();
+        getMvpView().openLoginActivity();
     }
 }

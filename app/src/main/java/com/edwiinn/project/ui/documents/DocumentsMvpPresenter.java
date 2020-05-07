@@ -15,4 +15,6 @@ public interface DocumentsMvpPresenter<V extends DocumentsMvpView> extends MvpPr
     void checkAllDocumentsIsSigned(List<DocumentsResponse.Document> documents);
 
     void uploadSignedDocument(DocumentsResponse.Document document);
+
+    void onLogoutClick();
 }

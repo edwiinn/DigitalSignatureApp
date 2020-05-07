@@ -7,8 +7,6 @@ public interface DocumentMvpPresenter<V extends DocumentMvpView> extends MvpPres
 
     void onViewInitialized();
 
-    void onLoadCertificate();
-
     void onDocumentLoad();
 
     void onDocumentSign();

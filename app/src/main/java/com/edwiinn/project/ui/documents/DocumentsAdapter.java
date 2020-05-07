@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.edwiinn.project.R;
@@ -66,7 +67,7 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         ConstraintLayout documentItemLayout;
 
         @BindView(R.id.upload_btn)
-        MaterialButton uploadButton;
+        Button uploadButton;
 
         DocumentsResponse.Document document;
         public ViewHolder(View itemView) {

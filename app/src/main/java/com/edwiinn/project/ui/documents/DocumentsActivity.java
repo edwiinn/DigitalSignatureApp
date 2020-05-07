@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import android.content.Intent;
 import android.content.Context;
@@ -19,6 +20,7 @@ import com.edwiinn.project.R;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.ui.base.BaseActivity;
 import com.edwiinn.project.ui.documents.document.DocumentActivity;
+import com.edwiinn.project.ui.login.LoginActivity;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -85,6 +87,18 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
         Intent intent = DocumentActivity.getStartIntent(DocumentsActivity.this);
         intent.putExtra("document", document);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.logout_btn)
+    public void onLogoutClick() {
+        mPresenter.onLogoutClick();
+    }
+
+    @Override
+    public void openLoginActivity() {
+        Intent intent = LoginActivity.getStartIntent(DocumentsActivity.this);
+        startActivity(intent);
+        finish();
     }
 
     @Override

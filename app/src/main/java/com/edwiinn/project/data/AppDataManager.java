@@ -17,9 +17,13 @@ package com.edwiinn.project.data;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
+import com.edwiinn.project.data.network.model.GoogleResponse;
+import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.$Gson$Types;
@@ -30,17 +34,15 @@ import com.edwiinn.project.data.db.model.Question;
 import com.edwiinn.project.data.db.model.User;
 import com.edwiinn.project.data.network.ApiHeader;
 import com.edwiinn.project.data.network.ApiHelper;
-import com.edwiinn.project.data.network.model.BlogResponse;
-import com.edwiinn.project.data.network.model.LoginRequest;
-import com.edwiinn.project.data.network.model.LoginResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
-import com.edwiinn.project.data.network.model.OpenSourceResponse;
 import com.edwiinn.project.data.prefs.PreferencesHelper;
 import com.edwiinn.project.di.ApplicationContext;
 import com.edwiinn.project.utils.AppConstants;
 import com.edwiinn.project.utils.CommonUtils;
 
-import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import net.openid.appauth.AuthState;
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.TokenResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,16 +76,19 @@ public class AppDataManager implements DataManager {
     private final DbHelper mDbHelper;
     private final PreferencesHelper mPreferencesHelper;
     private final ApiHelper mApiHelper;
+    private final AuthStateManager mAuthStateManager;
 
     @Inject
     public AppDataManager(@ApplicationContext Context context,
                           DbHelper dbHelper,
                           PreferencesHelper preferencesHelper,
-                          ApiHelper apiHelper) {
+                          ApiHelper apiHelper,
+                          AuthStateManager authStateManager) {
         mContext = context;
         mDbHelper = dbHelper;
         mPreferencesHelper = preferencesHelper;
         mApiHelper = apiHelper;
+        mAuthStateManager = authStateManager;
     }
 
     @Override
@@ -118,24 +123,6 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Single<LoginResponse> doGoogleLoginApiCall(LoginRequest.GoogleLoginRequest
-                                                              request) {
-        return mApiHelper.doGoogleLoginApiCall(request);
-    }
-
-    @Override
-    public Single<LoginResponse> doFacebookLoginApiCall(LoginRequest.FacebookLoginRequest
-                                                                request) {
-        return mApiHelper.doFacebookLoginApiCall(request);
-    }
-
-    @Override
-    public Single<LoginResponse> doServerLoginApiCall(LoginRequest.ServerLoginRequest
-                                                              request) {
-        return mApiHelper.doServerLoginApiCall(request);
-    }
-
-    @Override
     public Single<LogoutResponse> doLogoutApiCall() {
         return mApiHelper.doLogoutApiCall();
     }
@@ -151,12 +138,12 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Long getCurrentUserId() {
+    public String getCurrentUserId() {
         return mPreferencesHelper.getCurrentUserId();
     }
 
     @Override
-    public void setCurrentUserId(Long userId) {
+    public void setCurrentUserId(String userId) {
         mPreferencesHelper.setCurrentUserId(userId);
     }
 
@@ -191,7 +178,7 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public void updateApiHeader(Long userId, String accessToken) {
+    public void updateApiHeader(String userId, String accessToken) {
         mApiHelper.getApiHeader().getProtectedApiHeader().setUserId(userId);
         mApiHelper.getApiHeader().getProtectedApiHeader().setAccessToken(accessToken);
     }
@@ -199,7 +186,7 @@ public class AppDataManager implements DataManager {
     @Override
     public void updateUserInfo(
             String accessToken,
-            Long userId,
+            String userId,
             LoggedInMode loggedInMode,
             String userName,
             String email,
@@ -331,16 +318,6 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Single<BlogResponse> getBlogApiCall() {
-        return mApiHelper.getBlogApiCall();
-    }
-
-    @Override
-    public Single<OpenSourceResponse> getOpenSourceApiCall() {
-        return mApiHelper.getOpenSourceApiCall();
-    }
-
-    @Override
     public Single<DocumentsResponse> getAllDocuments() {
         return mApiHelper.getAllDocuments();
     }
@@ -360,4 +337,28 @@ public class AppDataManager implements DataManager {
         return mApiHelper.uploadSignedDocument(signedDocument);
     }
 
+    @Override
+    public Single<GoogleResponse.UserInfo> getGoogleUserInformation() {
+        return mApiHelper.getGoogleUserInformation();
+    }
+
+    @Override
+    public AuthState getCurrentAuthState() {
+        return mAuthStateManager.getCurrentAuthState();
+    }
+
+    @Override
+    public void clearAuthState() {
+        mAuthStateManager.clearAuthState();
+    }
+
+    @Override
+    public AuthState replaceAuthState(@NonNull AuthState state) {
+        return mAuthStateManager.replaceAuthState(state);
+    }
+
+    @Override
+    public AuthState updateAuthState(@Nullable TokenResponse response, @Nullable AuthorizationException ex) {
+        return mAuthStateManager.updateAuthState(response, ex);
+    }
 }

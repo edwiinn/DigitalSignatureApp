@@ -69,61 +69,6 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
     }
 
     @Override
-    public void onLoadCertificate() {
-        getMvpView().showLoading();
-        File file = new File(getDataManager().getCertificateLocation());
-        if(file.exists()) file.delete();
-
-        try {
-            KeyPair keyPair = getDataManager().getDocumentKeyPair();
-            PKCS10CertificationRequest csr = CsrUtils.generateCSR(keyPair, "Edwin", "ITS", "Informatika");
-            CsrRequest request = new CsrRequest(CsrUtils.toBase64Format(csr));
-            Log.d("csr", CsrUtils.toBase64Format(csr));
-            getCompositeDisposable().add(getDataManager()
-                    .requestSignCsr(request)
-                    .subscribeOn(getSchedulerProvider().io())
-                    .observeOn(getSchedulerProvider().ui())
-                    .subscribeWith(new DisposableObserver<String>() {
-                        @Override
-                        public void onNext(String s) {
-                            File file = new File(getDataManager().getCertificateLocation());
-                            try {
-                                if (!file.exists()){
-                                    file.getParentFile().mkdir();
-                                    file.createNewFile();
-                                }
-                                FileWriter fileWriter = new FileWriter(file, true);
-                                fileWriter.append(s);
-                                fileWriter.flush();
-                                fileWriter.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                getMvpView().showMessage(e.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
-                            getMvpView().showMessage(e.getMessage());
-                            getMvpView().hideLoading();
-                            Log.e("Certificate", e.getMessage());
-                            getMvpView().closeActivity();
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            getMvpView().hideLoading();
-                        }
-                    })
-            );
-        } catch (Exception exception) {
-            getMvpView().showMessage(exception.getMessage());
-            getMvpView().hideLoading();
-        }
-    }
-
-    @Override
     public void onDocumentLoad() {
         DocumentsResponse.Document document = getMvpView().getDocument();
         File documentFile = new File(getDataManager().getDocumentsStorageLocation(), document.getName());

@@ -81,7 +81,6 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
     protected void setUp() {
         loadDocument();
         mPresenter.onViewInitialized();
-        mPresenter.onLoadCertificate();
         toolbar.setTitle(getDocument().getName());
 
         signBtn.setOnClickListener(new View.OnClickListener() {

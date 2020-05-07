@@ -16,20 +16,20 @@
 package com.edwiinn.project.data.network;
 
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.edwiinn.project.data.network.model.BlogResponse;
 import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
-import com.edwiinn.project.data.network.model.LoginRequest;
-import com.edwiinn.project.data.network.model.LoginResponse;
+import com.edwiinn.project.data.network.model.GoogleResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
-import com.edwiinn.project.data.network.model.OpenSourceResponse;
-import com.edwiinn.project.di.ApplicationContext;
 import com.rx2androidnetworking.Rx2AndroidNetworking;
 
-import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import java.io.File;
 
@@ -53,43 +53,9 @@ public class AppApiHelper implements ApiHelper {
         mApiHeader = apiHeader;
     }
 
-    @Inject
-    @ApplicationContext
-    Context applicationContext;
-
     @Override
     public ApiHeader getApiHeader() {
         return mApiHeader;
-    }
-
-    @Override
-    public Single<LoginResponse> doGoogleLoginApiCall(LoginRequest.GoogleLoginRequest
-                                                              request) {
-        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_GOOGLE_LOGIN)
-                .addHeaders(mApiHeader.getPublicApiHeader())
-                .addBodyParameter(request)
-                .build()
-                .getObjectSingle(LoginResponse.class);
-    }
-
-    @Override
-    public Single<LoginResponse> doFacebookLoginApiCall(LoginRequest.FacebookLoginRequest
-                                                                request) {
-        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_FACEBOOK_LOGIN)
-                .addHeaders(mApiHeader.getPublicApiHeader())
-                .addBodyParameter(request)
-                .build()
-                .getObjectSingle(LoginResponse.class);
-    }
-
-    @Override
-    public Single<LoginResponse> doServerLoginApiCall(LoginRequest.ServerLoginRequest
-                                                              request) {
-        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_SERVER_LOGIN)
-                .addHeaders(mApiHeader.getPublicApiHeader())
-                .addBodyParameter(request)
-                .build()
-                .getObjectSingle(LoginResponse.class);
     }
 
     @Override
@@ -98,22 +64,6 @@ public class AppApiHelper implements ApiHelper {
                 .addHeaders(mApiHeader.getProtectedApiHeader())
                 .build()
                 .getObjectSingle(LogoutResponse.class);
-    }
-
-    @Override
-    public Single<BlogResponse> getBlogApiCall() {
-        return Rx2AndroidNetworking.get(ApiEndPoint.ENDPOINT_BLOG)
-                .addHeaders(mApiHeader.getProtectedApiHeader())
-                .build()
-                .getObjectSingle(BlogResponse.class);
-    }
-
-    @Override
-    public Single<OpenSourceResponse> getOpenSourceApiCall() {
-        return Rx2AndroidNetworking.get(ApiEndPoint.ENDPOINT_OPEN_SOURCE)
-                .addHeaders(mApiHeader.getProtectedApiHeader())
-                .build()
-                .getObjectSingle(OpenSourceResponse.class);
     }
 
     @Override
@@ -148,6 +98,14 @@ public class AppApiHelper implements ApiHelper {
                 .addMultipartFile("document", signedDocument)
                 .build()
                 .getStringObservable();
+    }
+
+    @Override
+    public Single<GoogleResponse.UserInfo> getGoogleUserInformation() {
+        return Rx2AndroidNetworking.get(ApiEndPoint.ENDPOINT_GOOGLE_USER_INFO)
+                .addHeaders(mApiHeader.getProtectedApiHeader())
+                .build()
+                .getObjectSingle(GoogleResponse.UserInfo.class);
     }
 }
 

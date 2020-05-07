@@ -23,23 +23,17 @@ import com.edwiinn.project.BuildConfig;
 
 public final class ApiEndPoint {
 
-    public static final String ENDPOINT_GOOGLE_LOGIN = BuildConfig.BASE_URL
-            + "/588d14f4100000a9072d2943";
+    public static final String ENDPOINT_GOOGLE_LOGIN_AUTH = BuildConfig.GOOGLE_ACCOUNT_URL
+            + "/o/oauth2/v2/auth";
 
-    public static final String ENDPOINT_FACEBOOK_LOGIN = BuildConfig.BASE_URL
-            + "/588d15d3100000ae072d2944";
+    public static final String ENDPOINT_GOOGLE_LOGIN_TOKEN = BuildConfig.GOOGLE_API_URL
+            + "/oauth2/v4/token";
 
-    public static final String ENDPOINT_SERVER_LOGIN = BuildConfig.BASE_URL
-            + "/588d15f5100000a8072d2945";
+    public static final String ENDPOINT_GOOGLE_USER_INFO = BuildConfig.GOOGLE_API_URL
+            + "/oauth2/v3/userinfo";
 
     public static final String ENDPOINT_LOGOUT = BuildConfig.BASE_URL
             + "/588d161c100000a9072d2946";
-
-    public static final String ENDPOINT_BLOG = BuildConfig.BASE_URL
-            + "/5926ce9d11000096006ccb30";
-
-    public static final String ENDPOINT_OPEN_SOURCE = BuildConfig.BASE_URL
-            + "/5926c34212000035026871cd";
 
     public static final String ENDPOINT_DOCUMENTS = BuildConfig.BASE_URL
             + "/documents";

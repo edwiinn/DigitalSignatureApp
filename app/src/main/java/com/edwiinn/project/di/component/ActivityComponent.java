@@ -17,16 +17,10 @@ package com.edwiinn.project.di.component;
 
 import com.edwiinn.project.di.PerActivity;
 import com.edwiinn.project.di.module.ActivityModule;
-import com.edwiinn.project.ui.about.AboutFragment;
 import com.edwiinn.project.ui.documents.DocumentsActivity;
 import com.edwiinn.project.ui.documents.document.DocumentActivity;
 import com.edwiinn.project.ui.documents.document.signer.SignDialog;
-import com.edwiinn.project.ui.feed.FeedActivity;
-import com.edwiinn.project.ui.feed.blogs.BlogFragment;
-import com.edwiinn.project.ui.feed.opensource.OpenSourceFragment;
 import com.edwiinn.project.ui.login.LoginActivity;
-import com.edwiinn.project.ui.main.MainActivity;
-import com.edwiinn.project.ui.main.rating.RateUsDialog;
 import com.edwiinn.project.ui.splash.SplashActivity;
 
 import dagger.Component;
@@ -39,8 +33,6 @@ import dagger.Component;
 @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)
 public interface ActivityComponent {
 
-    void inject(MainActivity activity);
-
     void inject(LoginActivity activity);
 
     void inject(SplashActivity activity);
@@ -48,16 +40,6 @@ public interface ActivityComponent {
     void inject(DocumentActivity activity);
 
     void inject(DocumentsActivity activity);
-
-    void inject(FeedActivity activity);
-
-    void inject(AboutFragment fragment);
-
-    void inject(OpenSourceFragment fragment);
-
-    void inject(BlogFragment fragment);
-
-    void inject(RateUsDialog dialog);
 
     void inject(SignDialog signDialog);
 }
