@@ -1,5 +1,6 @@
 package com.edwiinn.project.ui.documents.document;
 
+import android.annotation.SuppressLint;
 import android.icu.util.LocaleData;
 import android.os.Bundle;
 
@@ -25,6 +26,8 @@ import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.di.ApplicationContext;
 import com.edwiinn.project.ui.base.BaseActivity;
 import com.edwiinn.project.R;
+import com.edwiinn.project.ui.documents.DocumentsActivity;
+import com.edwiinn.project.ui.documents.DocumentsFragment;
 import com.edwiinn.project.ui.documents.document.signer.SignDialog;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
@@ -82,7 +85,7 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
         loadDocument();
         mPresenter.onViewInitialized();
         toolbar.setTitle(getDocument().getName());
-
+        if (this.isDocumentSigned()) signBtn.hide();
         signBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,13 +120,10 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
                 .onPageScroll(new OnPageScrollListener() {
                     @Override
                     public void onPageScrolled(int page, float positionOffset) {
-                        hideSignerButton();
-                    }
-                })
-                .onPageChange(new OnPageChangeListener() {
-                    @Override
-                    public void onPageChanged(int page, int pageCount) {
-                        hideSignerButton();
+                        if (positionOffset > 0.05) {
+                            Log.d("Offset", Float.toString(positionOffset));
+                            hideSignerButton();
+                        }
                     }
                 })
                 .swipeHorizontal(false)
@@ -144,8 +144,14 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
+    public boolean isDocumentSigned(){ return mDocument.getSigned() || mDocument.getUserSigned(); }
+
     @Override
     public void showSignerButton() {
+        if (this.isDocumentSigned()) {
+            signBtn.hide();
+            return;
+        }
         if (signBtn.getVisibility() == View.VISIBLE) {
             return;
         }
@@ -153,13 +159,11 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
         animation.setDuration(500);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
+            public void onAnimationStart(Animation animation) { }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                signBtn.setVisibility(View.VISIBLE);
+                signBtn.show();
             }
 
             @Override
@@ -172,6 +176,10 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
 
     @Override
     public void hideSignerButton() {
+        if (this.isDocumentSigned()) {
+            signBtn.hide();
+            return;
+        }
         if (signBtn.getVisibility() == View.GONE) {
             return;
         }
@@ -183,6 +191,7 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
 
             }
 
+            @SuppressLint("RestrictedApi")
             @Override
             public void onAnimationEnd(Animation animation) {
                 signBtn.setVisibility(View.GONE);

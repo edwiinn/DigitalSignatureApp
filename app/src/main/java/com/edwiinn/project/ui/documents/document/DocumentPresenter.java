@@ -3,19 +3,13 @@ package com.edwiinn.project.ui.documents.document;
 import android.util.Log;
 
 import com.edwiinn.project.data.DataManager;
-import com.edwiinn.project.data.network.model.CsrRequest;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.ui.base.BasePresenter;
 import com.edwiinn.project.utils.CertificationUtils;
 import com.edwiinn.project.utils.CommonUtils;
-import com.edwiinn.project.utils.CsrUtils;
 import com.edwiinn.project.utils.rx.SchedulerProvider;
 
-import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.security.KeyPair;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -90,7 +84,7 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
                 file.createNewFile();
             }
             Certificate[] chain = { certificate };
-            CertificationUtils.signPdfDocument(documentSrc, documentDst, chain, kp.getPrivate(), "I Verify This Document","Surabaya");
+            CertificationUtils.signPdfDocument(documentSrc, documentDst, chain, kp.getPrivate());
             getMvpView().showMessage("Dokumen " + document.getName() + " berhasil di tanda tangani");
         } catch (Exception exception) {
             getMvpView().showMessage(exception.getMessage());

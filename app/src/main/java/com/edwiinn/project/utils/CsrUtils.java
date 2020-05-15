@@ -1,22 +1,31 @@
 package com.edwiinn.project.utils;
 
 import android.util.Base64;
+import android.util.Log;
 
+import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.ExtensionsGenerator;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
+import org.bouncycastle.util.io.pem.PemObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -30,80 +39,28 @@ public final class CsrUtils {
         // This utility class is not publicly instantiable
     }
 
-    private static class JCESigner implements ContentSigner {
-
-        private String mAlgo;
-        private Signature signature;
-        private ByteArrayOutputStream outputStream;
-
-        private static Map<String, AlgorithmIdentifier> ALGOS = new HashMap<>();
-        static {
-            ALGOS.put("SHA256withRSA".toLowerCase(), new AlgorithmIdentifier(
-                    new ASN1ObjectIdentifier("1.2.840.113549.1.1.11")
-            ));
-            ALGOS.put("SHA1withRSA".toLowerCase(), new AlgorithmIdentifier(
-                    new ASN1ObjectIdentifier("1.2.840.113549.1.1.5")
-            ));
-        }
-
-        private JCESigner(PrivateKey privateKey , String sigAlgo){
-            this.mAlgo = sigAlgo.toLowerCase();
-            try {
-                this.outputStream = new ByteArrayOutputStream();
-                this.signature = Signature.getInstance(sigAlgo);
-                this.signature.initSign(privateKey);
-            } catch (GeneralSecurityException gse) {
-                throw new IllegalArgumentException(gse.getMessage());
-            }
-        }
-
-        @Override
-        public AlgorithmIdentifier getAlgorithmIdentifier() {
-            AlgorithmIdentifier algo = ALGOS.get(this.mAlgo);
-            if (algo == null){
-                throw new IllegalArgumentException("Does not support algo: ".concat(this.mAlgo));
-            }
-            return algo;
-        }
-
-        @Override
-        public OutputStream getOutputStream() {
-            return this.outputStream;
-        }
-
-        @Override
-        public byte[] getSignature() {
-            byte[] signatureByte = null;
-            try {
-                signature.update(outputStream.toByteArray());
-                signatureByte = signature.sign();
-            } catch (GeneralSecurityException gse){
-                gse.printStackTrace();
-            }
-            return signatureByte;
-        }
+    public static PKCS10CertificationRequest generateCSR(KeyPair keyPair, String cn, String o, String ou) throws IOException, OperatorCreationException {
+        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+        builder.addRDN(BCStyle.C, "ID");
+        builder.addRDN(BCStyle.O, o);
+        builder.addRDN(BCStyle.OU, ou);
+        builder.addRDN(BCStyle.ST, "Jawa Timur");
+        builder.addRDN(BCStyle.L, "Surabaya");
+        builder.addRDN(BCStyle.CN, cn);
+        PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(
+                builder.build(), keyPair.getPublic());
+        JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(AppConstants.CSR_SIGNATURE_ALGORITHM);
+        ContentSigner signer = csrBuilder.build(keyPair.getPrivate());
+        PKCS10CertificationRequest csr = p10Builder.build(signer);
+        return csr;
     }
 
-    public static PKCS10CertificationRequest generateCSR(KeyPair keyPair, String cn, String o, String ou) throws IOException {
-        String principal = String.format(AppConstants.CSR_CN_PATTERN, cn, o, ou);
-        JCESigner signer = new JCESigner(keyPair.getPrivate(), AppConstants.CSR_SIGNATURE_ALGORITHM);
-        PKCS10CertificationRequestBuilder csrBuilder = new JcaPKCS10CertificationRequestBuilder(
-                new X500Name(principal), keyPair.getPublic()
-        );
-        ExtensionsGenerator extensionsGenerator = new ExtensionsGenerator();
-        extensionsGenerator.addExtension(
-                Extension.basicConstraints, true, new BasicConstraints(true)
-        );
-        csrBuilder.addAttribute(
-                PKCSObjectIdentifiers.pkcs_9_at_extensionRequest,
-                extensionsGenerator.generate()
-        );
-
-        return csrBuilder.build(signer);
-    }
-
-    public static String toBase64Format(PKCS10CertificationRequest csr) throws IOException {
-        String encodedCsr = Base64.encodeToString(csr.getEncoded(), Base64.DEFAULT);
-        return String.format(AppConstants.CSR_BASE64_PATTERN, encodedCsr);
+    public static String toPemFormat(PKCS10CertificationRequest csr) throws IOException {
+        final StringWriter writer = new StringWriter();
+        final JcaPEMWriter pemWriter = new JcaPEMWriter(writer);
+        pemWriter.writeObject(csr);
+        pemWriter.flush();
+        pemWriter.close();
+        return writer.toString();
     }
 }

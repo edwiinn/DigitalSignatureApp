@@ -105,6 +105,7 @@ public class ActivityModule {
             SignDialogPresenter<SignDialogMvpView> presenter) {
         return presenter;
     }
+
     @Provides
     DocumentsAdapter provideDocumentsAdapter() {
         return new DocumentsAdapter(new ArrayList<DocumentsResponse.Document>());

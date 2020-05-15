@@ -4,6 +4,7 @@ package com.edwiinn.project.ui.documents;
 
 import android.util.Log;
 
+import com.androidnetworking.error.ANError;
 import com.edwiinn.project.data.DataManager;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.ui.base.BasePresenter;
@@ -12,6 +13,7 @@ import com.edwiinn.project.utils.rx.SchedulerProvider;
 import java.io.File;
 import java.util.List;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.DisposableObserver;
@@ -44,6 +46,23 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
                         }
                         getMvpView().hideLoading();
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable)
+                            throws Exception {
+                        if (!isViewAttached()) {
+                            return;
+                        }
+
+                        getMvpView().showRetryPage();
+                        getMvpView().hideLoading();
+
+                        // handle the error here
+                        if (throwable instanceof ANError) {
+                            ANError anError = (ANError) throwable;
+                            handleApiError(anError);
+                        }
+                    }
                 }));
     }
 
@@ -55,7 +74,7 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
     @Override
     public void checkAllDocumentsIsSigned(List<DocumentsResponse.Document> documents) {
         for (DocumentsResponse.Document document: documents) {
-            document.checkIfDocumentSigned(getDataManager().getSignedDocumentsStorageLocation());
+            document.checkIfDocumentUserSigned(getDataManager().getSignedDocumentsStorageLocation());
         }
     }
 

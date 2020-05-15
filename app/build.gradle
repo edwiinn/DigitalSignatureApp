@@ -32,6 +32,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"http://139.180.156.171\"")
+            buildConfigField("String", "ITS_CFSSL_URL", "\"https://ca.its.ac.id\"")
             buildConfigField("String", "GOOGLE_ACCOUNT_URL", "\"https://accounts.google.com\"")
             buildConfigField("String", "GOOGLE_API_URL", "\"https://www.googleapis.com\"")
             buildConfigField("String", "GOOGLE_CLIENT_ID", "\"213741557039-vt8oeseo1bolfk6hdiq6gvgf7l3dghtt.apps.googleusercontent.com\"")

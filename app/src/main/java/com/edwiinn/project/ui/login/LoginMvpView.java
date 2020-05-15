@@ -25,4 +25,5 @@ public interface LoginMvpView extends MvpView {
 
     void openDocumentsActivity();
 
+    void openMainActivity();
 }

@@ -45,7 +45,11 @@ public class DocumentsResponse {
         @SerializedName("id")
         private Integer id;
 
-        private Boolean isSigned;
+        @Expose
+        @SerializedName("is_signed")
+        public Boolean isSigned;
+
+        private Boolean isUserSigned;
 
         public String getName() {
             return mName;
@@ -72,18 +76,19 @@ public class DocumentsResponse {
             isSigned = signed;
         }
 
-        public Boolean checkIfDocumentSigned(String folderSrc) {
-            File file = new File(folderSrc, mName);
-            isSigned = file.exists();
-            return file.exists();
+        public Document(int id, String name, boolean isSigned){
+            mName = name;
+            this.id = id;
+            this.isSigned = isSigned;
         }
 
         public Document(Parcel in){
-            String[] data = new String[2];
+            String[] data = new String[3];
 
             in.readStringArray(data);
             this.id = Integer.parseInt(data[0]);
             this.mName = data[1];
+            this.isSigned = Boolean.parseBoolean(data[2]);
         }
 
         public static final Creator<Document> CREATOR = new Creator<Document>() {
@@ -105,7 +110,22 @@ public class DocumentsResponse {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeStringArray(new String[]{this.id.toString(), this.mName});
+            dest.writeStringArray(new String[]{this.id.toString(), this.mName, this.isSigned.toString()});
+        }
+
+        public Boolean getUserSigned() {
+            return isUserSigned = isUserSigned == null ? false : isUserSigned;
+        }
+
+        public void setUserSigned(Boolean userSigned) {
+            isUserSigned = userSigned;
+        }
+
+        public boolean checkIfDocumentUserSigned(String signedStoragePath){
+            if (isSigned) return false;
+            File file = new File(signedStoragePath, mName);
+            isUserSigned = file.exists();
+            return file.exists();
         }
     }
 }

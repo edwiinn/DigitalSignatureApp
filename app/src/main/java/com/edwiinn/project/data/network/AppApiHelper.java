@@ -16,20 +16,16 @@
 package com.edwiinn.project.data.network;
 
 
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-
-import com.edwiinn.project.data.network.model.CsrRequest;
+import com.edwiinn.project.data.network.model.CertificateRequest;
+import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
 import com.rx2androidnetworking.Rx2AndroidNetworking;
 
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -83,12 +79,13 @@ public class AppApiHelper implements ApiHelper {
     }
 
     @Override
-    public Observable<String> requestSignCsr(CsrRequest request) {
-        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_CERTIFICATE + "/csr/sign")
-                .addHeaders(mApiHeader.getPublicApiHeader())
-                .addBodyParameter(request)
+    public Single<CertificateResponse> requestSignCsr(CertificateRequest request) throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("certificate_request", request.getCertificationRequest());
+        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_SIGN_CSR)
+                .addJSONObjectBody(obj)
                 .build()
-                .getStringObservable();
+                .getObjectSingle(CertificateResponse.class);
     }
 
     @Override

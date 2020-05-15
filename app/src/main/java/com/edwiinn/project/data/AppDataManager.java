@@ -20,7 +20,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.edwiinn.project.data.network.model.CsrRequest;
+import com.edwiinn.project.data.network.model.CertificateRequest;
+import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
 import com.edwiinn.project.data.prefs.AuthStateManager;
@@ -44,6 +45,8 @@ import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.TokenResponse;
 
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -53,6 +56,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -218,6 +223,11 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
+    public String getSignatureImageLocation() {
+        return mContext.getExternalFilesDir(null).toString() + "/signature/signature.png";
+    }
+
+    @Override
     public void setUserAsLoggedOut() {
         updateUserInfo(
                 null,
@@ -328,7 +338,7 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Observable<String> requestSignCsr(CsrRequest request) {
+    public Single<CertificateResponse> requestSignCsr(CertificateRequest request) throws JSONException {
         return mApiHelper.requestSignCsr(request);
     }
 

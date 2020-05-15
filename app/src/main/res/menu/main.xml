@@ -17,27 +17,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_cut"
-        android:icon="@drawable/avd_cut"
-        android:title="@string/cut"
-        app:showAsAction="always" />
+        android:id="@+id/action_documents"
+        android:icon="@drawable/paper"
+        android:enabled="true"
+        android:title="Documents" />
 
     <item
-        android:id="@+id/action_copy"
-        android:icon="@drawable/avd_copy"
-        android:title="@string/copy"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_delete"
-        android:icon="@drawable/avd_delete"
-        android:title="@string/delete"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_share"
-        android:icon="@drawable/avd_share"
-        android:title="@string/share"
-        app:showAsAction="always" />
+        android:id="@+id/action_signature"
+        android:icon="@drawable/ic_signing"
+        android:enabled="true"
+        android:title="Signature" />
 
 </menu>

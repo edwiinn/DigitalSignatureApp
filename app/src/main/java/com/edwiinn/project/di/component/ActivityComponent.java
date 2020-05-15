@@ -19,8 +19,11 @@ import com.edwiinn.project.di.PerActivity;
 import com.edwiinn.project.di.module.ActivityModule;
 import com.edwiinn.project.ui.documents.DocumentsActivity;
 import com.edwiinn.project.ui.documents.document.DocumentActivity;
+import com.edwiinn.project.ui.documents.DocumentsFragment;
 import com.edwiinn.project.ui.documents.document.signer.SignDialog;
 import com.edwiinn.project.ui.login.LoginActivity;
+import com.edwiinn.project.ui.main.MainActivity;
+import com.edwiinn.project.ui.signature.SignatureFragment;
 import com.edwiinn.project.ui.splash.SplashActivity;
 
 import dagger.Component;
@@ -42,4 +45,10 @@ public interface ActivityComponent {
     void inject(DocumentsActivity activity);
 
     void inject(SignDialog signDialog);
+
+    void inject(MainActivity mainActivity);
+
+    void inject(DocumentsFragment documentsFragment);
+
+    void inject(SignatureFragment signatureFragment);
 }

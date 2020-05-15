@@ -16,10 +16,13 @@
 package com.edwiinn.project.data.network;
 
 
-import com.edwiinn.project.data.network.model.CsrRequest;
+import com.edwiinn.project.data.network.model.CertificateRequest;
+import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
+
+import org.json.JSONException;
 
 import java.io.File;
 
@@ -40,7 +43,7 @@ public interface ApiHelper {
 
     Observable<String> getDocument(String documentName, String downloadLocation);
 
-    Observable<String> requestSignCsr(CsrRequest request);
+    Single<CertificateResponse> requestSignCsr(CertificateRequest request) throws JSONException;
 
     Observable<String> uploadSignedDocument(File signedDocument);
 

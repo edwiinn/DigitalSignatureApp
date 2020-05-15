@@ -24,6 +24,7 @@ import android.view.View;
 import com.edwiinn.project.R;
 import com.edwiinn.project.ui.base.BaseActivity;
 import com.edwiinn.project.ui.documents.DocumentsActivity;
+import com.edwiinn.project.ui.main.MainActivity;
 import com.edwiinn.project.ui.splash.SplashActivity;
 
 import net.openid.appauth.AuthorizationException;
@@ -116,6 +117,13 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     @Override
     public void openDocumentsActivity() {
         Intent intent = DocumentsActivity.getStartIntent(LoginActivity.this);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void openMainActivity() {
+        Intent intent = MainActivity.getStartIntent(LoginActivity.this);
         startActivity(intent);
         finish();
     }

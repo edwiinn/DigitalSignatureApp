@@ -10,17 +10,18 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/sign_btn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
         android:clickable="true"
         android:focusable="false"
         android:src="@drawable/ic_contract"
-        app:fabCustomSize="60dp"
+        app:fabCustomSize="72dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/document_pdf"
-        app:maxImageSize="32dp" />
+        app:maxImageSize="38dp" />
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"

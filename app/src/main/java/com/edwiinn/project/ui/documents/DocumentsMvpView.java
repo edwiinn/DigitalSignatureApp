@@ -12,5 +12,9 @@ public interface DocumentsMvpView extends MvpView {
 
     void openDocumentActvity(DocumentsResponse.Document document);
 
+    void showRetryPage();
+
+    void hideRetryPage();
+
     void openLoginActivity();
 }

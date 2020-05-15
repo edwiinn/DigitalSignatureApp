@@ -39,10 +39,11 @@ public final class AppConstants {
     public static final String ANDROID_KEYSTORE = "AndroidKeyStore";
 
     public static final String DOCUMENT_KEYALIAS = "DocumentKeyAlias";
+    public static final String DOCUMENT_SIGNATURE_LOCATION = "Indonesia";
+    public static final String DOCUMENT_SIGNATURE_REASON = "Internal Approval";
 
     public static final String CSR_SIGNATURE_ALGORITHM = "SHA256withRSA";
     public static final String CSR_BASE64_PATTERN = "-----BEGIN CERTIFICATE REQUEST-----\n%s-----END CERTIFICATE REQUEST-----\n";
-    public static final String CSR_CN_PATTERN = "CN=%s, O=%s, OU=%s";
 
     private AppConstants() {
         // This utility class is not publicly instantiable

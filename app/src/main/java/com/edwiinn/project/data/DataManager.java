@@ -18,8 +18,11 @@ package com.edwiinn.project.data;
 
 import com.edwiinn.project.data.db.DbHelper;
 import com.edwiinn.project.data.network.ApiHelper;
+import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.edwiinn.project.data.prefs.PreferencesHelper;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 
@@ -66,4 +69,7 @@ public interface DataManager extends DbHelper, PreferencesHelper, ApiHelper, Aut
     String getSignedDocumentsStorageLocation();
 
     String getCertificateLocation();
+
+    String getSignatureImageLocation();
+
 }

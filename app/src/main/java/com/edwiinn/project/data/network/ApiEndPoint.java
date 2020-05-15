@@ -39,10 +39,10 @@ public final class ApiEndPoint {
             + "/documents";
 
     public static final String ENDPOINT_SIGNED_DOCUMENTS = BuildConfig.BASE_URL
-            + "/signed-documents";
+            + "/documents";
 
-    public static final String ENDPOINT_CERTIFICATE = BuildConfig.BASE_URL
-            + "/certificate";
+    public static final String ENDPOINT_SIGN_CSR = BuildConfig.ITS_CFSSL_URL
+            + "/api/v1/cfssl/sign";
 
     private ApiEndPoint() {
         // This class is not publicly instantiable

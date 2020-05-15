@@ -24,16 +24,13 @@ import android.util.Log;
 
 import com.androidnetworking.error.ANError;
 import com.edwiinn.project.BuildConfig;
-import com.edwiinn.project.R;
 import com.edwiinn.project.data.DataManager;
 import com.edwiinn.project.data.network.ApiEndPoint;
-import com.edwiinn.project.data.network.model.CsrRequest;
+import com.edwiinn.project.data.network.model.CertificateRequest;
+import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
-import com.edwiinn.project.data.network.model.LoginRequest;
-import com.edwiinn.project.data.network.model.LoginResponse;
 import com.edwiinn.project.di.ActivityContext;
 import com.edwiinn.project.ui.base.BasePresenter;
-import com.edwiinn.project.utils.CommonUtils;
 import com.edwiinn.project.utils.CsrUtils;
 import com.edwiinn.project.utils.rx.SchedulerProvider;
 
@@ -50,6 +47,7 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.security.KeyPair;
 
 import javax.inject.Inject;
@@ -241,42 +239,48 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
 
         try {
             KeyPair keyPair = getDataManager().getDocumentKeyPair();
-            PKCS10CertificationRequest csr = CsrUtils.generateCSR(keyPair, getDataManager().getCurrentUserName(), "ITS", "Informatika");
-            CsrRequest request = new CsrRequest(CsrUtils.toBase64Format(csr));
+            PKCS10CertificationRequest csr = CsrUtils.generateCSR(keyPair, "project.edwiinn.com", "ITS", "Informatika");
+            CertificateRequest request = new CertificateRequest(CsrUtils.toPemFormat(csr));
+            Log.d("CSRprincipal", CsrUtils.toPemFormat(csr));
             getCompositeDisposable().add(getDataManager()
                     .requestSignCsr(request)
                     .subscribeOn(getSchedulerProvider().io())
                     .observeOn(getSchedulerProvider().ui())
-                    .subscribeWith(new DisposableObserver<String>() {
+                    .subscribe(new Consumer<CertificateResponse>() {
                         @Override
-                        public void onNext(String s) {
+                        public void accept(CertificateResponse certificateResponse) throws Exception {
                             File file = new File(getDataManager().getCertificateLocation());
                             try {
-                                if (!file.exists()){
+                                if (!file.exists()) {
                                     file.getParentFile().mkdir();
                                     file.createNewFile();
                                 }
                                 FileWriter fileWriter = new FileWriter(file, true);
-                                fileWriter.append(s);
+                                fileWriter.append(certificateResponse.getCertificate().getCertificatePem());
                                 fileWriter.flush();
                                 fileWriter.close();
+                                getMvpView().hideLoading();
+                                decideNextActivity();
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                getMvpView().hideLoading();
                                 getMvpView().showMessage(e.getMessage());
                             }
                         }
-
+                    }, new Consumer<Throwable>() {
                         @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
-                            getMvpView().onError(e.getMessage());
-                            getMvpView().hideLoading();
-                        }
+                        public void accept(Throwable throwable) throws Exception {
+                            if (!isViewAttached()) {
+                                return;
+                            }
 
-                        @Override
-                        public void onComplete() {
                             getMvpView().hideLoading();
-                            decideNextActivity();
+
+                            // handle the error here
+                            if (throwable instanceof ANError) {
+                                ANError anError = (ANError) throwable;
+                                handleApiError(anError);
+                            }
                         }
                     })
             );
@@ -291,7 +295,7 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
             getDataManager().getCurrentUserLoggedInMode() != DataManager.LoggedInMode.LOGGED_IN_MODE_LOGGED_OUT.getType() &&
             new File(getDataManager().getCertificateLocation()).exists()
         ) {
-            getMvpView().openDocumentsActivity();
+            getMvpView().openMainActivity();
         }
     }
 }

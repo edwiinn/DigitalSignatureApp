@@ -1,19 +1,18 @@
 package com.edwiinn.project.ui.documents;
 
 import android.support.constraint.ConstraintLayout;
-import android.support.design.button.MaterialButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.edwiinn.project.R;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.ui.base.BaseViewHolder;
 
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -69,6 +68,12 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @BindView(R.id.upload_btn)
         Button uploadButton;
 
+        @BindView(R.id.icon_img)
+        ImageView iconImage;
+
+        @BindView(R.id.icon_signed_img)
+        ImageView iconSignedImage;
+
         DocumentsResponse.Document document;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -84,8 +89,18 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             super.onBind(position);
 
             this.document = mDocumentsResponseList.get(position);
+            uploadButton.setVisibility(View.INVISIBLE);
 
             if (document.getSigned()) {
+                iconSignedImage.setVisibility(View.VISIBLE);
+                iconImage.setVisibility(View.INVISIBLE);
+            } else {
+                iconSignedImage.setVisibility(View.INVISIBLE);
+                iconImage.setVisibility(View.VISIBLE);
+                uploadButton.setVisibility(View.INVISIBLE);
+            }
+
+            if (document.getUserSigned()){
                 uploadButton.setVisibility(View.VISIBLE);
                 uploadButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -93,8 +108,6 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                         mDocumentsPresenter.uploadSignedDocument(document);
                     }
                 });
-            } else {
-                uploadButton.setVisibility(View.GONE);
             }
 
             if (document.getName() != null){

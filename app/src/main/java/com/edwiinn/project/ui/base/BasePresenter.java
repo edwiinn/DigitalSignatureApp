@@ -138,7 +138,6 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
                     getMvpView().onError(apiError.getMessage());
             }
         } catch (JsonSyntaxException | NullPointerException e) {
-            Log.e(TAG, "handleApiError", e);
             getMvpView().onError(R.string.api_default_error);
         }
     }
