@@ -10,4 +10,6 @@ public interface DocumentMvpPresenter<V extends DocumentMvpView> extends MvpPres
     void onDocumentLoad();
 
     void onDocumentSign();
+
+    void onDocumentSignWithSignature(float x, float y, float width, float height, int page);
 }

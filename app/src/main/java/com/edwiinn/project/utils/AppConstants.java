@@ -43,7 +43,6 @@ public final class AppConstants {
     public static final String DOCUMENT_SIGNATURE_REASON = "Internal Approval";
 
     public static final String CSR_SIGNATURE_ALGORITHM = "SHA256withRSA";
-    public static final String CSR_BASE64_PATTERN = "-----BEGIN CERTIFICATE REQUEST-----\n%s-----END CERTIFICATE REQUEST-----\n";
 
     private AppConstants() {
         // This utility class is not publicly instantiable

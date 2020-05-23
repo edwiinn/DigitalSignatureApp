@@ -1,12 +1,22 @@
 package com.edwiinn.project.utils;
 
+import android.graphics.Rect;
 import android.util.Base64;
 
+import com.itextpdf.io.font.FontConstants;
+import com.itextpdf.io.font.FontMetrics;
+import com.itextpdf.io.font.FontNames;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.font.PdfType0Font;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.signatures.BouncyCastleDigest;
 import com.itextpdf.signatures.DigestAlgorithms;
+import com.itextpdf.signatures.PdfSignatureAppearance;
 import com.itextpdf.signatures.PdfSigner;
 import com.itextpdf.signatures.PrivateKeySignature;
 
@@ -48,30 +58,35 @@ public final class CertificationUtils {
         PdfReader reader = new PdfReader(src);
         PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), false);
         signer.getSignatureAppearance()
-            .setReason(DOCUMENT_SIGNATURE_REASON)
-            .setLocation(DOCUMENT_SIGNATURE_LOCATION)
-            .setReuseAppearance(false);
-        signer.setFieldName("sig");
-        // Creating the signature
+                .setReason(DOCUMENT_SIGNATURE_REASON)
+                .setLocation(DOCUMENT_SIGNATURE_LOCATION);
         PrivateKeySignature pks = new PrivateKeySignature(pk, DigestAlgorithms.SHA256, "AndroidKeyStoreBCWorkaround");
         BouncyCastleDigest digest = new BouncyCastleDigest();
         signer.signDetached(digest, pks, chain, null, null, null, 4*8192, PdfSigner.CryptoStandard.CMS);
     }
 
     public static void signPdfDocumentWithElectronicSignature(
-            String src , String dest , String signatureImageLocation,
+            String src, String dest,
             Certificate[] chain,
-            PrivateKey pk
+            PrivateKey pk,
+            String imageSrc,
+            float imageX,
+            float imageY,
+            float imageWidth,
+            float imageHeight,
+            int page
     ) throws IOException, GeneralSecurityException {
         PdfReader reader = new PdfReader(src);
         PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), false);
-        ImageData image = ImageDataFactory.create(signatureImageLocation);
+        ImageData image = ImageDataFactory.create(imageSrc);
+        Rectangle rect = new Rectangle(imageX, imageY, imageWidth, imageHeight);
         signer.getSignatureAppearance()
                 .setReason(DOCUMENT_SIGNATURE_REASON)
                 .setLocation(DOCUMENT_SIGNATURE_LOCATION)
-                .setReuseAppearance(false)
-                .setImage(image);
-        signer.setFieldName("sig");
+                .setPageRect(rect)
+                .setSignatureGraphic(image)
+                .setPageNumber(page)
+                .setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
         // Creating the signature
         PrivateKeySignature pks = new PrivateKeySignature(pk, DigestAlgorithms.SHA256, "AndroidKeyStoreBCWorkaround");
         BouncyCastleDigest digest = new BouncyCastleDigest();

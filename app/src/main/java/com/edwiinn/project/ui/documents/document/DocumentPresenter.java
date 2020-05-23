@@ -1,5 +1,7 @@
 package com.edwiinn.project.ui.documents.document;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.edwiinn.project.data.DataManager;
@@ -60,6 +62,14 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
                 }
             })
         );
+
+        File signatureImageFile = new File(getDataManager().getSignatureImageLocation());
+        if (signatureImageFile.exists()){
+            Bitmap signatureImageBitmap = BitmapFactory.decodeFile(signatureImageFile.getAbsolutePath());
+            getMvpView().updateSignatureImage(signatureImageBitmap);
+        } else {
+            getMvpView().updateSignatureImage(null);
+        }
     }
 
     @Override
@@ -67,6 +77,7 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
         DocumentsResponse.Document document = getMvpView().getDocument();
         File documentFile = new File(getDataManager().getDocumentsStorageLocation(), document.getName());
         getMvpView().showDocument(documentFile);
+        getMvpView().registerSignatureImageBehaviour();
     }
 
     @Override
@@ -87,8 +98,34 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
             CertificationUtils.signPdfDocument(documentSrc, documentDst, chain, kp.getPrivate());
             getMvpView().showMessage("Dokumen " + document.getName() + " berhasil di tanda tangani");
         } catch (Exception exception) {
-            getMvpView().showMessage(exception.getMessage());
+            getMvpView().onError(exception.getMessage());
         }
         getMvpView().closeActivity();
+    }
+
+    @Override
+    public void onDocumentSignWithSignature(float x, float y, float width, float height, int page) {
+        getMvpView().showLoading();
+        DocumentsResponse.Document document = getMvpView().getDocument();
+        try {
+            KeyPair kp = getDataManager().getDocumentKeyPair();
+            String documentSrc = getDataManager().getDocumentsStorageLocation() + "/" + document.getName();
+            String documentDst = getDataManager().getSignedDocumentsStorageLocation() + "/" + document.getName();
+            String certificatePem = CommonUtils.usingBufferedReader(getDataManager().getCertificateLocation());
+            X509Certificate certificate = CertificationUtils.toX509Format(certificatePem);
+            File file = new File(documentDst);
+            if (!file.exists()) {
+                file.getParentFile().mkdir();
+                file.createNewFile();
+            }
+            Certificate[] chain = { certificate };
+            CertificationUtils.signPdfDocumentWithElectronicSignature(documentSrc, documentDst, chain, kp.getPrivate(), getDataManager().getSignatureImageLocation(), x, y, width, height, page);
+            getMvpView().showMessage("Dokumen " + document.getName() + " berhasil di tanda tangani");
+        } catch (Exception exception) {
+            getMvpView().onError(exception.getMessage());
+        }
+        getMvpView().hideLoading();
+        getMvpView().closeActivity();
+
     }
 }

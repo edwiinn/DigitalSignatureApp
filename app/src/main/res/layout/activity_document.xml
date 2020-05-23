@@ -1,12 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/shadow"
     tools:context=".ui.documents.document.DocumentActivity">
+
+    <ImageView
+        android:id="@+id/signature_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:srcCompat="@color/colorPrimary" />
+
+    <SeekBar
+        android:id="@+id/size_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:background="@color/colorPrimary"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:thumbTint="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sign_btn"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/sign_btn"
@@ -15,7 +38,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorPrimary"
-        android:clickable="true"
         android:focusable="false"
         android:src="@drawable/ic_contract"
         app:fabCustomSize="72dp"
@@ -28,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/signature_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -47,10 +70,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/shadow"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/size_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" >
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
     </com.github.barteksc.pdfviewer.PDFView>
 

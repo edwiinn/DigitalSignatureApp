@@ -10,7 +10,7 @@ public interface DocumentsMvpView extends MvpView {
 
     void updateDocuments(List<DocumentsResponse.Document> documents);
 
-    void openDocumentActvity(DocumentsResponse.Document document);
+    void openDocumentActivity(DocumentsResponse.Document document);
 
     void showRetryPage();
 

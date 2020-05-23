@@ -18,7 +18,7 @@ public final class BitmapUtils {
         int width = src.getWidth();
         int height = src.getHeight();
         int[] pixels = new int[width * height];
-        src.getPixels(pixels, 0, 1 * width, 0, 0, width, height);
+        src.getPixels(pixels, 0, width, 0, 0, width, height);
         for (int x = 0; x < pixels.length; ++x) {
             if(pixels[x] == Color.WHITE) pixels[x] = Color.TRANSPARENT;
         }
@@ -31,11 +31,23 @@ public final class BitmapUtils {
         int width = src.getWidth();
         int height = src.getHeight();
         int[] pixels = new int[width * height];
-        src.getPixels(pixels, 0, 1 * width, 0, 0, width, height);
+        src.getPixels(pixels, 0, width, 0, 0, width, height);
         for (int x = 0; x < pixels.length; ++x) {
             if(pixels[x] == Color.TRANSPARENT) pixels[x] = Color.WHITE;
         }
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
     }
 
+    public static Bitmap replaceTransparentToBlueSemiTransparant(Bitmap src) {
+        if (src == null)
+            return null;
+        int width = src.getWidth();
+        int height = src.getHeight();
+        int[] pixels = new int[width * height];
+        src.getPixels(pixels, 0, width, 0, 0, width, height);
+        for (int x = 0; x < pixels.length; ++x) {
+            if(pixels[x] == Color.TRANSPARENT) pixels[x] = Color.argb( 22, 33, 66, 88);
+        }
+        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+    }
 }

@@ -54,4 +54,8 @@ public class ScreenUtils {
         }
         return result;
     }
+
+    public static float parsePixelToPoint( float pixel, float scale) {
+        return pixel*scale;
+    }
 }

@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 
@@ -31,6 +32,9 @@ public class SignDialog extends BaseDialog implements SignDialogMvpView {
 
     @BindView(R.id.confirm_btn)
     Button mConfirmBtn;
+
+    @BindView(R.id.sign_radio)
+    RadioButton mSignRadioButton;
 
     @Inject
     SignDialogMvpPresenter<SignDialogMvpView> mPresenter;
@@ -73,7 +77,11 @@ public class SignDialog extends BaseDialog implements SignDialogMvpView {
         mConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((DocumentActivity) getActivity()).signDocument();
+                if (mSignRadioButton.isChecked()) {
+                    ((DocumentActivity) getActivity()).signDocumentWithElectronicSignature();
+                } else {
+                    ((DocumentActivity) getActivity()).signDocument();
+                }
                 getActivity().onBackPressed();
             }
         });

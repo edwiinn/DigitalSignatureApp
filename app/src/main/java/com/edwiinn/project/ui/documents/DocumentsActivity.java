@@ -92,7 +92,7 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
     }
 
     @Override
-    public void openDocumentActvity(DocumentsResponse.Document document) {
+    public void openDocumentActivity(DocumentsResponse.Document document) {
         Intent intent = DocumentActivity.getStartIntent(DocumentsActivity.this);
         intent.putExtra("document", document);
         startActivity(intent);

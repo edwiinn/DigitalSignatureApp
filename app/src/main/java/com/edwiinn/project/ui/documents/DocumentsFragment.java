@@ -68,7 +68,7 @@ public class DocumentsFragment extends BaseFragment implements DocumentsMvpView 
     }
 
     @Override
-    public void openDocumentActvity(DocumentsResponse.Document document) {
+    public void openDocumentActivity(DocumentsResponse.Document document) {
         Intent intent = DocumentActivity.getStartIntent(getActivity());
         intent.putExtra("document", document);
         startActivity(intent);
