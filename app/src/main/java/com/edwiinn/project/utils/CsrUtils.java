@@ -33,6 +33,10 @@ import java.security.Signature;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.edwiinn.project.utils.AppConstants.CSR_ATTRIBUTE_C;
+import static com.edwiinn.project.utils.AppConstants.CSR_ATTRIBUTE_L;
+import static com.edwiinn.project.utils.AppConstants.CSR_ATTRIBUTE_ST;
+
 public final class CsrUtils {
 
     private CsrUtils() {
@@ -41,18 +45,17 @@ public final class CsrUtils {
 
     public static PKCS10CertificationRequest generateCSR(KeyPair keyPair, String cn, String o, String ou) throws IOException, OperatorCreationException {
         X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-        builder.addRDN(BCStyle.C, "ID");
         builder.addRDN(BCStyle.O, o);
         builder.addRDN(BCStyle.OU, ou);
-        builder.addRDN(BCStyle.ST, "Jawa Timur");
-        builder.addRDN(BCStyle.L, "Surabaya");
+        builder.addRDN(BCStyle.ST, CSR_ATTRIBUTE_ST);
+        builder.addRDN(BCStyle.C, CSR_ATTRIBUTE_C);
+        builder.addRDN(BCStyle.L, CSR_ATTRIBUTE_L);
         builder.addRDN(BCStyle.CN, cn);
         PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(
                 builder.build(), keyPair.getPublic());
         JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(AppConstants.CSR_SIGNATURE_ALGORITHM);
         ContentSigner signer = csrBuilder.build(keyPair.getPrivate());
-        PKCS10CertificationRequest csr = p10Builder.build(signer);
-        return csr;
+        return p10Builder.build(signer);
     }
 
     public static String toPemFormat(PKCS10CertificationRequest csr) throws IOException {

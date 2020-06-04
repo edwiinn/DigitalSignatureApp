@@ -37,6 +37,11 @@ public class SignaturePresenter<V extends SignatureMvpView> extends BasePresente
     @Override
     public void saveSignature(GestureOverlayView signatureBox) {
         try{
+            File file = new File(getDataManager().getSignatureImageLocation());
+            if (!file.exists()) {
+                file.getParentFile().mkdir();
+                file.createNewFile();
+            }
             Bitmap bitmap = BitmapUtils.replaceWhiteColorToTransparent(getBitmapFromView(signatureBox));
             FileOutputStream fos = new FileOutputStream(getDataManager().getSignatureImageLocation());
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
@@ -46,6 +51,8 @@ public class SignaturePresenter<V extends SignatureMvpView> extends BasePresente
         } catch (Exception ex){
             ex.printStackTrace();
             getMvpView().onError(ex.getMessage());
+            getMvpView().showMessage(ex.getMessage());
+
         }
     }
 

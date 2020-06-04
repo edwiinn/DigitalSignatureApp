@@ -58,23 +58,5 @@ public class LoginActivityTest {
     @Test
     public void checkViewsDisplay() {
         main.launchActivity(LoginActivity.getStartIntent(component.getContext()));
-
-        onView(withId(R.id.et_email))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.et_password))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.btn_server_login))
-                .check(matches(isDisplayed()));
-
-        onView(withText(R.string.login))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.ib_google_login))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.ib_fb_login))
-                .check(matches(isDisplayed()));
     }
 }

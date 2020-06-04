@@ -28,7 +28,7 @@ import com.edwiinn.project.data.DataManager;
 import com.edwiinn.project.data.network.ApiEndPoint;
 import com.edwiinn.project.data.network.model.CertificateRequest;
 import com.edwiinn.project.data.network.model.CertificateResponse;
-import com.edwiinn.project.data.network.model.GoogleResponse;
+import com.edwiinn.project.data.network.model.ItsResponse;
 import com.edwiinn.project.di.ActivityContext;
 import com.edwiinn.project.ui.base.BasePresenter;
 import com.edwiinn.project.utils.CsrUtils;
@@ -89,25 +89,13 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
     }
 
     @Override
-    public void onGoogleLoginClick() {
-        getMvpView().showLoading();
+    public void doSsoRequestAuth() {
         try {
-            doGoogleRequestAuth();
-            getMvpView().hideLoading();
-        } catch (Exception ex){
-            getMvpView().hideLoading();
-            getMvpView().showMessage(ex.getMessage());
-        }
-    }
-
-    @Override
-    public void doGoogleRequestAuth() {
-        try {
-            String clientId = BuildConfig.GOOGLE_CLIENT_ID;
+            String clientId = BuildConfig.ITS_SSO_CLIENT_ID;
             Uri redirectUri = Uri.parse("com.edwiinn.project:/oauth2callback");
             AuthorizationServiceConfiguration serviceConfiguration = new AuthorizationServiceConfiguration(
-                    Uri.parse(ApiEndPoint.ENDPOINT_GOOGLE_LOGIN_AUTH),
-                    Uri.parse(ApiEndPoint.ENDPOINT_GOOGLE_LOGIN_TOKEN)
+                    Uri.parse(ApiEndPoint.ENDPOINT_ITS_LOGIN_AUTH),
+                    Uri.parse(ApiEndPoint.ENDPOINT_ITS_LOGIN_TOKEN)
             );
             AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(
                     serviceConfiguration,
@@ -115,12 +103,15 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
                     AuthorizationRequest.RESPONSE_TYPE_CODE,
                     redirectUri
             );
-            builder.setScopes("profile");
+            builder.setPrompt(AuthorizationRequest.Prompt.LOGIN);
+            builder.setScopes("profile email phone openid");
+
             AuthorizationRequest request = builder.build();
             String action = "com.edwiinn.project.HANDLE_AUTHORIZATION_RESPONSE";
             Intent postAuthorizationIntent = new Intent(action);
             postAuthorizationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(mActivityContext, request.hashCode(), postAuthorizationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
             mAuthorizationService.performAuthorizationRequest(request, pendingIntent);
             getMvpView().hideLoading();
         } catch (Exception exception) {
@@ -130,10 +121,9 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
     }
 
     @Override
-    public void doGoogleRequestToken(AuthorizationResponse response, AuthorizationException error) {
+    public void doSsoRequestToken(AuthorizationResponse response, AuthorizationException error) {
         getMvpView().showLoading();
         try {
-            final AuthState authState = getDataManager().getCurrentAuthState();
             mAuthorizationService.performTokenRequest(response.createTokenExchangeRequest(), new AuthorizationService.TokenResponseCallback() {
                 @Override
                 public void onTokenRequestCompleted(@Nullable TokenResponse tokenResponse, @Nullable AuthorizationException exception) {
@@ -143,17 +133,17 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
                         getMvpView().hideLoading();
                     } else {
                         if (tokenResponse != null) {
-                            Log.d("Acess Token", tokenResponse.accessToken);
+                            Log.d("keypaira", tokenResponse.accessToken);
                             getDataManager().updateUserInfo(
-                                    "Bearer " + tokenResponse.accessToken,
-                                    tokenResponse.idToken,
-                                    DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
+                                    tokenResponse.tokenType + " " + tokenResponse.accessToken,
+                                    null,
+                                    DataManager.LoggedInMode.LOGGED_IN_MODE_LOGGED_OUT,
                                     null,
                                     null,
                                     null);
                             getMvpView().hideLoading();
                             getDataManager().updateAuthState(tokenResponse, exception);
-                            loadGoogleUserInfo();
+                            loadSsoUserInfo();
                         }
                     }
                 }
@@ -165,20 +155,20 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
     }
 
     @Override
-    public void loadGoogleUserInfo() {
+    public void loadSsoUserInfo() {
         getMvpView().showLoading();
         try {
             getCompositeDisposable().add(getDataManager()
-                    .getGoogleUserInformation()
+                    .getSsoUserInformation()
                     .subscribeOn(getSchedulerProvider().io())
                     .observeOn(getSchedulerProvider().ui())
-                    .subscribe(new Consumer<GoogleResponse.UserInfo>() {
+                    .subscribe(new Consumer<ItsResponse.UserInfo>() {
                         @Override
-                        public void accept(GoogleResponse.UserInfo userInfo) throws Exception {
+                        public void accept(ItsResponse.UserInfo userInfo) throws Exception {
                             getDataManager().updateUserInfo(
                                     getDataManager().getAccessToken(),
-                                    getDataManager().getCurrentUserId(),
-                                    DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
+                                    userInfo.getId(),
+                                    DataManager.LoggedInMode.LOGGED_IN_MODE_ITS_SSO,
                                     userInfo.getName(),
                                     null,
                                     null
@@ -209,39 +199,19 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
     }
 
     @Override
-    public void doGoogleRequestFreshToken() {
-        AuthState authState = getDataManager().getCurrentAuthState();
-        authState.performActionWithFreshTokens(mAuthorizationService, new AuthState.AuthStateAction() {
-            @Override
-            public void execute(@Nullable String accessToken, @Nullable String idToken, @Nullable AuthorizationException exception) {
-                if (exception != null){
-                    getMvpView().onError(exception.getMessage());
-                    return;
-                }
-
-                getDataManager().updateUserInfo(
-                        accessToken,
-                        idToken,
-                        DataManager.LoggedInMode.LOGGED_IN_MODE_GOOGLE,
-                        getDataManager().getCurrentUserName(),
-                        null,
-                        null
-                );
-            }
-        });
-    }
-
-    @Override
     public void onLoadCertificate() {
         getMvpView().showLoading();
         File file = new File(getDataManager().getCertificateLocation());
-        if(file.exists()) file.delete();
+        if(file.exists()) {
+            getMvpView().hideLoading();
+            decideNextActivity();
+            return;
+        }
 
         try {
             KeyPair keyPair = getDataManager().getDocumentKeyPair();
-            PKCS10CertificationRequest csr = CsrUtils.generateCSR(keyPair, "project.edwiinn.com", "ITS", "Informatika");
+            PKCS10CertificationRequest csr = CsrUtils.generateCSR(keyPair, getDataManager().getCurrentUserName(), "ITS", "Informatika");
             CertificateRequest request = new CertificateRequest(CsrUtils.toPemFormat(csr));
-            Log.d("CSRprincipal", CsrUtils.toPemFormat(csr));
             getCompositeDisposable().add(getDataManager()
                     .requestSignCsr(request)
                     .subscribeOn(getSchedulerProvider().io())
@@ -293,7 +263,8 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
     private void decideNextActivity(){
         if (
             getDataManager().getCurrentUserLoggedInMode() != DataManager.LoggedInMode.LOGGED_IN_MODE_LOGGED_OUT.getType() &&
-            new File(getDataManager().getCertificateLocation()).exists()
+            new File(getDataManager().getCertificateLocation()).exists() &&
+            getDataManager().getAccessToken() != null
         ) {
             getMvpView().openMainActivity();
         }

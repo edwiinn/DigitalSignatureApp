@@ -64,9 +64,9 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
         mPresenter.onAttach(LoginActivity.this);
     }
 
-    @OnClick(R.id.google_login_btn)
-    void onGoogleLoginClick(View v) {
-        mPresenter.onGoogleLoginClick();
+    @OnClick(R.id.sso_login_btn)
+    void onSsoButtonClick(View v) {
+        mPresenter.doSsoRequestAuth();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class LoginActivity extends BaseActivity implements LoginMvpView {
     private void handleAuthorizationResponse(Intent intent) {
         AuthorizationResponse response = AuthorizationResponse.fromIntent(intent);
         AuthorizationException exception = AuthorizationException.fromIntent(intent);
-        mPresenter.doGoogleRequestToken(response, exception);
+        mPresenter.doSsoRequestToken(response, exception);
     }
 
     @Override

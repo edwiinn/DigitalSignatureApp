@@ -22,6 +22,13 @@ import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.edwiinn.project.data.prefs.PreferencesHelper;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -51,7 +58,8 @@ public interface DataManager extends DbHelper, PreferencesHelper, ApiHelper, Aut
     enum LoggedInMode {
 
         LOGGED_IN_MODE_LOGGED_OUT(0),
-        LOGGED_IN_MODE_GOOGLE(1);
+        LOGGED_IN_MODE_GOOGLE(1),
+        LOGGED_IN_MODE_ITS_SSO(2);
 
         private final int mType;
 
@@ -72,4 +80,7 @@ public interface DataManager extends DbHelper, PreferencesHelper, ApiHelper, Aut
 
     String getSignatureImageLocation();
 
+    void updateUserAccessToken(String accessToken);
+
+    KeyPair getDocumentKeyPair() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableEntryException, InvalidAlgorithmParameterException, IOException;
 }

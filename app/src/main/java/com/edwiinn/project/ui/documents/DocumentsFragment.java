@@ -54,6 +54,7 @@ public class DocumentsFragment extends BaseFragment implements DocumentsMvpView 
     @Override
     protected void setUp(View view) {
         hideRetryPage();
+        Log.d("Hello", "Bbbb");
         mDocumentsAdapter.setPresenter(mPresenter);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mDocumentsRecyclerView.setLayoutManager(mLayoutManager);
@@ -89,7 +90,10 @@ public class DocumentsFragment extends BaseFragment implements DocumentsMvpView 
     }
 
     @OnClick(R.id.retry_btn)
-    public void onRetryClick() { mPresenter.onViewInitialized(); }
+    public void onRetryClick() {
+        Log.d("Hello", "Aaaa");
+        mPresenter.onViewInitialized();
+    }
 
     @OnClick(R.id.logout_btn)
     public void onLogoutClick() {
@@ -129,7 +133,8 @@ public class DocumentsFragment extends BaseFragment implements DocumentsMvpView 
     public void updateDocuments(List<DocumentsResponse.Document> documents) {
         mDocuments = documents;
         mPresenter.checkAllDocumentsIsSigned(documents);
-        mDocumentsAdapter.addItems(documents);
+//        mDocumentsAdapter.addItems(documents);
+        mDocumentsAdapter.changeItems(documents);
     }
 
     @Override

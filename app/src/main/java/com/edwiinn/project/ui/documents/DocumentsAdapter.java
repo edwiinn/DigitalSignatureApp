@@ -1,5 +1,6 @@
 package com.edwiinn.project.ui.documents;
 
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.edwiinn.project.R;
@@ -57,6 +59,11 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void changeItems(List<DocumentsResponse.Document> documentsList){
+        mDocumentsResponseList = documentsList;
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends BaseViewHolder {
 
         @BindView(R.id.title_txt)
@@ -68,6 +75,12 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @BindView(R.id.upload_btn)
         Button uploadButton;
 
+        @BindView(R.id.action_layout)
+        LinearLayout actionLayout;
+
+        @BindView(R.id.delete_btn)
+        Button deleteButton;
+
         @BindView(R.id.icon_img)
         ImageView iconImage;
 
@@ -75,6 +88,7 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         ImageView iconSignedImage;
 
         DocumentsResponse.Document document;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -89,23 +103,31 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             super.onBind(position);
 
             this.document = mDocumentsResponseList.get(position);
-            uploadButton.setVisibility(View.INVISIBLE);
+            actionLayout.setVisibility(View.INVISIBLE);
 
-            if (document.getSigned()) {
+            if (document.getSigned() ) {
                 iconSignedImage.setVisibility(View.VISIBLE);
                 iconImage.setVisibility(View.INVISIBLE);
             } else {
                 iconSignedImage.setVisibility(View.INVISIBLE);
                 iconImage.setVisibility(View.VISIBLE);
-                uploadButton.setVisibility(View.INVISIBLE);
+                actionLayout.setVisibility(View.INVISIBLE);
             }
 
             if (document.getUserSigned()){
-                uploadButton.setVisibility(View.VISIBLE);
+                actionLayout.setVisibility(View.VISIBLE);
+                iconSignedImage.setVisibility(View.VISIBLE);
+                iconImage.setVisibility(View.INVISIBLE);
                 uploadButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mDocumentsPresenter.uploadSignedDocument(document);
+                    }
+                });
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mDocumentsPresenter.deleteUserSignedDocument(document);
                     }
                 });
             }

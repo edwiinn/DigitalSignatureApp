@@ -20,6 +20,7 @@ import com.edwiinn.project.data.network.model.CertificateRequest;
 import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
+import com.edwiinn.project.data.network.model.ItsResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
 
 import org.json.JSONException;
@@ -37,15 +38,15 @@ public interface ApiHelper {
 
     ApiHeader getApiHeader();
 
-    Single<LogoutResponse> doLogoutApiCall();
-
     Single<DocumentsResponse> getAllDocuments();
 
-    Observable<String> getDocument(String documentName, String downloadLocation);
+    Observable<String> getDocument(String documentId, String downloadLocation);
 
     Single<CertificateResponse> requestSignCsr(CertificateRequest request) throws JSONException;
 
-    Observable<String> uploadSignedDocument(File signedDocument);
+    Observable<String> uploadSignedDocument(File signedDocument, String userDocumentId);
 
     Single<GoogleResponse.UserInfo> getGoogleUserInformation();
+
+    Single<ItsResponse.UserInfo> getSsoUserInformation();
 }

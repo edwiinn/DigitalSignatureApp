@@ -1,7 +1,5 @@
 package com.edwiinn.project.ui.documents;
 
-
-
 import android.util.Log;
 
 import com.androidnetworking.error.ANError;
@@ -53,7 +51,6 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
                         if (!isViewAttached()) {
                             return;
                         }
-
                         getMvpView().showRetryPage();
                         getMvpView().hideLoading();
 
@@ -82,19 +79,19 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
     public void uploadSignedDocument(DocumentsResponse.Document document) {
         try {
             getMvpView().showLoading();
-            if (!document.getSigned()){
+            if (!document.getUserSigned()){
                 getMvpView().hideLoading();
                 getMvpView().showMessage("Dokumen belum ditandatangani");
                 return;
             }
-            File signedDocument = new File(getDataManager().getSignedDocumentsStorageLocation(), document.getName());
+            File signedDocument = new File(getDataManager().getSignedDocumentsStorageLocation(), document.getId() + ".pdf");
             if (!signedDocument.exists()) {
                 getMvpView().hideLoading();
                 getMvpView().showMessage("Dokumen tidak ditemukan");
                 return;
             }
             getCompositeDisposable().add(getDataManager()
-                .uploadSignedDocument(signedDocument)
+                .uploadSignedDocument(signedDocument, Integer.toString(document.getId()))
                 .subscribeOn(getSchedulerProvider().io())
                 .observeOn(getSchedulerProvider().ui())
                 .subscribeWith(new DisposableObserver<String>() {
@@ -112,7 +109,8 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
                     @Override
                     public void onComplete() {
                         getMvpView().hideLoading();
-                        getMvpView().showMessage("File Sukse di upload");
+                        getMvpView().showMessage("File Sukses di upload");
+                        onViewInitialized();
                     }
                 })
             );
@@ -120,6 +118,17 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
             getMvpView().hideLoading();
             getMvpView().showMessage(e.getMessage());
         }
+    }
+
+    @Override
+    public void deleteUserSignedDocument(DocumentsResponse.Document document) {
+        getMvpView().showLoading();
+        File file = new File(getDataManager().getSignedDocumentsStorageLocation(), document.getId() + ".pdf");
+        if(file.exists()){
+            file.delete();
+        }
+        onViewInitialized();
+        getMvpView().hideLoading();
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.font.PdfType0Font;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.StampingProperties;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.signatures.BouncyCastleDigest;
 import com.itextpdf.signatures.DigestAlgorithms;
@@ -30,6 +31,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import static com.edwiinn.project.utils.AppConstants.DOCUMENT_SIGNATURE_FIELD_NAME;
 import static com.edwiinn.project.utils.AppConstants.DOCUMENT_SIGNATURE_LOCATION;
 import static com.edwiinn.project.utils.AppConstants.DOCUMENT_SIGNATURE_REASON;
 
@@ -56,10 +58,11 @@ public final class CertificationUtils {
             PrivateKey pk
     ) throws IOException, GeneralSecurityException {
         PdfReader reader = new PdfReader(src);
-        PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), false);
+        PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), new StampingProperties());
         signer.getSignatureAppearance()
                 .setReason(DOCUMENT_SIGNATURE_REASON)
                 .setLocation(DOCUMENT_SIGNATURE_LOCATION);
+        signer.setFieldName(DOCUMENT_SIGNATURE_FIELD_NAME);
         PrivateKeySignature pks = new PrivateKeySignature(pk, DigestAlgorithms.SHA256, "AndroidKeyStoreBCWorkaround");
         BouncyCastleDigest digest = new BouncyCastleDigest();
         signer.signDetached(digest, pks, chain, null, null, null, 4*8192, PdfSigner.CryptoStandard.CMS);
@@ -77,7 +80,7 @@ public final class CertificationUtils {
             int page
     ) throws IOException, GeneralSecurityException {
         PdfReader reader = new PdfReader(src);
-        PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), false);
+        PdfSigner signer = new PdfSigner(reader, new FileOutputStream(dest), new StampingProperties());
         ImageData image = ImageDataFactory.create(imageSrc);
         Rectangle rect = new Rectangle(imageX, imageY, imageWidth, imageHeight);
         signer.getSignatureAppearance()
@@ -87,6 +90,8 @@ public final class CertificationUtils {
                 .setSignatureGraphic(image)
                 .setPageNumber(page)
                 .setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+        signer.setFieldName(DOCUMENT_SIGNATURE_FIELD_NAME);
+
         // Creating the signature
         PrivateKeySignature pks = new PrivateKeySignature(pk, DigestAlgorithms.SHA256, "AndroidKeyStoreBCWorkaround");
         BouncyCastleDigest digest = new BouncyCastleDigest();

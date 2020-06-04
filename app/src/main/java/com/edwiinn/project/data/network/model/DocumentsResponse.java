@@ -47,7 +47,7 @@ public class DocumentsResponse {
 
         @Expose
         @SerializedName("is_signed")
-        public Boolean isSigned;
+        private Boolean isSigned;
 
         private Boolean isUserSigned;
 
@@ -83,12 +83,13 @@ public class DocumentsResponse {
         }
 
         public Document(Parcel in){
-            String[] data = new String[3];
+            String[] data = new String[4];
 
             in.readStringArray(data);
             this.id = Integer.parseInt(data[0]);
             this.mName = data[1];
             this.isSigned = Boolean.parseBoolean(data[2]);
+            this.isUserSigned = Boolean.parseBoolean(data[3]);
         }
 
         public static final Creator<Document> CREATOR = new Creator<Document>() {
@@ -110,7 +111,7 @@ public class DocumentsResponse {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeStringArray(new String[]{this.id.toString(), this.mName, this.isSigned.toString()});
+            dest.writeStringArray(new String[]{this.id.toString(), this.mName, this.isSigned.toString(), this.isUserSigned.toString()});
         }
 
         public Boolean getUserSigned() {
@@ -123,7 +124,7 @@ public class DocumentsResponse {
 
         public boolean checkIfDocumentUserSigned(String signedStoragePath){
             if (isSigned) return false;
-            File file = new File(signedStoragePath, mName);
+            File file = new File(signedStoragePath, id + ".pdf");
             isUserSigned = file.exists();
             return file.exists();
         }

@@ -24,6 +24,7 @@ import com.edwiinn.project.data.network.model.CertificateRequest;
 import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
+import com.edwiinn.project.data.network.model.ItsResponse;
 import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -113,8 +114,13 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
+    public KeyPair getDocumentKeyPair(String keyAlias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidAlgorithmParameterException, UnrecoverableEntryException {
+        return mPreferencesHelper.getDocumentKeyPair(keyAlias);
+    }
+
+    @Override
     public KeyPair getDocumentKeyPair() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableEntryException, InvalidAlgorithmParameterException, IOException {
-        return mPreferencesHelper.getDocumentKeyPair();
+        return getDocumentKeyPair(getCurrentUserId());
     }
 
     @Override
@@ -125,11 +131,6 @@ public class AppDataManager implements DataManager {
     @Override
     public Observable<List<User>> getAllUsers() {
         return mDbHelper.getAllUsers();
-    }
-
-    @Override
-    public Single<LogoutResponse> doLogoutApiCall() {
-        return mApiHelper.doLogoutApiCall();
     }
 
     @Override
@@ -219,12 +220,17 @@ public class AppDataManager implements DataManager {
 
     @Override
     public String getCertificateLocation() {
-        return mContext.getExternalFilesDir(null).toString() + "/certificate/certificate.cert";
+        return mContext.getExternalFilesDir(null).toString() + "/certificate/" + getCurrentUserId() + ".cert";
     }
 
     @Override
     public String getSignatureImageLocation() {
         return mContext.getExternalFilesDir(null).toString() + "/signature/signature.png";
+    }
+
+    @Override
+    public void updateUserAccessToken(String accessToken) {
+        setAccessToken(accessToken);
     }
 
     @Override
@@ -343,13 +349,18 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
-    public Observable<String> uploadSignedDocument(File signedDocument) {
-        return mApiHelper.uploadSignedDocument(signedDocument);
+    public Observable<String> uploadSignedDocument(File signedDocument, String documentId) {
+        return mApiHelper.uploadSignedDocument(signedDocument, documentId);
     }
 
     @Override
     public Single<GoogleResponse.UserInfo> getGoogleUserInformation() {
         return mApiHelper.getGoogleUserInformation();
+    }
+
+    @Override
+    public Single<ItsResponse.UserInfo> getSsoUserInformation() {
+        return mApiHelper.getSsoUserInformation();
     }
 
     @Override

@@ -32,6 +32,7 @@
     <color name="google">#d34836</color>
 
     <!--Design colors-->
+    <color name="red">#e04006</color>
     <color name="red_dark">#F06423</color>
     <color name="red_dark2">#D85A1B</color>
     <color name="cyan_light">#c9ebee</color>

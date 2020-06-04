@@ -55,5 +55,5 @@ public interface PreferencesHelper {
 
     void setAccessToken(String accessToken);
 
-    KeyPair getDocumentKeyPair() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidAlgorithmParameterException, UnrecoverableEntryException;
+    KeyPair getDocumentKeyPair(String keyAlias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, InvalidAlgorithmParameterException, UnrecoverableEntryException;
 }

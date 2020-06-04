@@ -5,5 +5,6 @@
         <domain includeSubdomains="true">139.180.156.171</domain>
         <domain includeSubdomains="true">googleapis.com</domain>
         <domain includeSubdomains="true">ca.its.ac.id</domain>
+        <domain includeSubdomains="true">dev-my.its.ac.id</domain>
     </domain-config>
 </network-security-config>

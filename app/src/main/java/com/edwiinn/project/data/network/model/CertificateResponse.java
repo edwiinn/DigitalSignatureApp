@@ -63,9 +63,5 @@ public class CertificateResponse {
         public String getCertificatePem() {
             return mCertificatePem;
         }
-
-        public void setCertificatePem(String certificatePem) {
-            this.mCertificatePem = certificatePem;
-        }
     }
 }

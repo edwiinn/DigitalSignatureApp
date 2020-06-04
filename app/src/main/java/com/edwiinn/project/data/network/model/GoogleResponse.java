@@ -8,6 +8,10 @@ public class GoogleResponse {
     public static class UserInfo{
 
         @Expose
+        @SerializedName("sub")
+        private String id;
+
+        @Expose
         @SerializedName("name")
         private String mName;
 
@@ -29,6 +33,14 @@ public class GoogleResponse {
 
         public void setProfilePicUrl(String profilePicUrl) {
             mProfilePicUrl = profilePicUrl;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
     }
 }

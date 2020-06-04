@@ -16,5 +16,7 @@ public interface DocumentsMvpPresenter<V extends DocumentsMvpView> extends MvpPr
 
     void uploadSignedDocument(DocumentsResponse.Document document);
 
+    void deleteUserSignedDocument(DocumentsResponse.Document document);
+
     void onLogoutClick();
 }

@@ -32,14 +32,23 @@ public final class ApiEndPoint {
     public static final String ENDPOINT_GOOGLE_USER_INFO = BuildConfig.GOOGLE_API_URL
             + "/oauth2/v3/userinfo";
 
-    public static final String ENDPOINT_LOGOUT = BuildConfig.BASE_URL
-            + "/588d161c100000a9072d2946";
+    public static final String ENDPOINT_ITS_LOGIN_TOKEN = BuildConfig.ITS_URL
+            + "/token";
+
+    public static final String ENDPOINT_ITS_LOGIN_AUTH =  BuildConfig.ITS_URL
+            + "/authorize";
+
+    public static final String ENDPOINT_ITS_USER_INFO = BuildConfig.ITS_URL
+            + "/userinfo";
+
+    public static final String ENDPOINT_ITS_LOGOUT =  BuildConfig.ITS_URL
+            + "/signout/global";
 
     public static final String ENDPOINT_DOCUMENTS = BuildConfig.BASE_URL
             + "/documents";
 
     public static final String ENDPOINT_SIGNED_DOCUMENTS = BuildConfig.BASE_URL
-            + "/documents";
+            + "/signed-documents";
 
     public static final String ENDPOINT_SIGN_CSR = BuildConfig.ITS_CFSSL_URL
             + "/api/v1/cfssl/sign";

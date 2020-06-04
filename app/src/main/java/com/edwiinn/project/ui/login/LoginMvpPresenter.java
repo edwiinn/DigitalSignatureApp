@@ -29,15 +29,11 @@ import net.openid.appauth.AuthorizationResponse;
 @PerActivity
 public interface LoginMvpPresenter<V extends LoginMvpView> extends MvpPresenter<V> {
 
-    void onGoogleLoginClick();
+    void doSsoRequestAuth();
 
-    void doGoogleRequestAuth();
+    void doSsoRequestToken(AuthorizationResponse response, AuthorizationException error);
 
-    void doGoogleRequestToken(AuthorizationResponse response, AuthorizationException error);
-
-    void loadGoogleUserInfo();
-
-    void doGoogleRequestFreshToken();
+    void loadSsoUserInfo();
 
     void onLoadCertificate();
 }

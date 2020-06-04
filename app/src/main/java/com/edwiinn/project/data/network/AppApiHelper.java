@@ -20,6 +20,7 @@ import com.edwiinn.project.data.network.model.CertificateRequest;
 import com.edwiinn.project.data.network.model.CertificateResponse;
 import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.network.model.GoogleResponse;
+import com.edwiinn.project.data.network.model.ItsResponse;
 import com.edwiinn.project.data.network.model.LogoutResponse;
 import com.rx2androidnetworking.Rx2AndroidNetworking;
 
@@ -55,25 +56,18 @@ public class AppApiHelper implements ApiHelper {
     }
 
     @Override
-    public Single<LogoutResponse> doLogoutApiCall() {
-        return Rx2AndroidNetworking.post(ApiEndPoint.ENDPOINT_LOGOUT)
-                .addHeaders(mApiHeader.getProtectedApiHeader())
-                .build()
-                .getObjectSingle(LogoutResponse.class);
-    }
-
-    @Override
     public Single<DocumentsResponse> getAllDocuments() {
         return Rx2AndroidNetworking.get(ApiEndPoint.ENDPOINT_DOCUMENTS)
-                .addHeaders(mApiHeader.getPublicApiHeader())
+                .addHeaders(mApiHeader.getProtectedApiHeader())
                 .build()
                 .getObjectSingle(DocumentsResponse.class);
     }
 
     @Override
-    public Observable<String> getDocument(String documentName, String downloadLocation) {
-        return Rx2AndroidNetworking.download(ApiEndPoint.ENDPOINT_DOCUMENTS + "/" + documentName, downloadLocation, documentName)
-                .addHeaders(mApiHeader.getPublicApiHeader())
+    public Observable<String> getDocument(String documentId, String downloadLocation) {
+        return Rx2AndroidNetworking.download(ApiEndPoint.ENDPOINT_DOCUMENTS + "/" + documentId, downloadLocation, documentId + ".pdf")
+                .addHeaders(mApiHeader.getProtectedApiHeader())
+                .doNotCacheResponse()
                 .build()
                 .getDownloadObservable();
     }
@@ -89,10 +83,11 @@ public class AppApiHelper implements ApiHelper {
     }
 
     @Override
-    public Observable<String> uploadSignedDocument(File signedDocument) {
+    public Observable<String> uploadSignedDocument(File signedDocument, String userDocumentId) {
         return Rx2AndroidNetworking.upload(ApiEndPoint.ENDPOINT_SIGNED_DOCUMENTS)
-                .addHeaders(mApiHeader.getPublicApiHeader())
+                .addHeaders(mApiHeader.getProtectedApiHeader())
                 .addMultipartFile("document", signedDocument)
+                .addMultipartParameter("user_document_id", userDocumentId)
                 .build()
                 .getStringObservable();
     }
@@ -103,6 +98,14 @@ public class AppApiHelper implements ApiHelper {
                 .addHeaders(mApiHeader.getProtectedApiHeader())
                 .build()
                 .getObjectSingle(GoogleResponse.UserInfo.class);
+    }
+
+    @Override
+    public Single<ItsResponse.UserInfo> getSsoUserInformation() {
+        return Rx2AndroidNetworking.get(ApiEndPoint.ENDPOINT_ITS_USER_INFO)
+                .addHeaders(mApiHeader.getProtectedApiHeader())
+                .build()
+                .getObjectSingle(ItsResponse.UserInfo.class);
     }
 }
 

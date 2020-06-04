@@ -131,7 +131,7 @@ public class AppPreferencesHelper implements PreferencesHelper {
     }
 
     @Override
-    public KeyPair getDocumentKeyPair()
+    public KeyPair getDocumentKeyPair(String keyAlias)
             throws
             CertificateException,
             NoSuchAlgorithmException,
@@ -139,35 +139,34 @@ public class AppPreferencesHelper implements PreferencesHelper {
             IOException,
             InvalidAlgorithmParameterException,
             UnrecoverableEntryException {
-        if(!isDocumentKeyPairAvailable()){
-            return generateDocumentKeyPair();
+        if(!isDocumentKeyPairAvailable(keyAlias)){
+            return generateDocumentKeyPair(keyAlias);
         }
         KeyStore store = KeyStore.getInstance(AppConstants.ANDROID_KEYSTORE);
         store.load(null);
 
-        KeyStore.Entry entry= store.getEntry(AppConstants.DOCUMENT_KEYALIAS, null);
-        if (entry instanceof KeyStore.PrivateKeyEntry == false) {
-            Log.w("tag", "Not an instance of a PrivateKeyEntry");
-            return null;
+        KeyStore.Entry entry = store.getEntry(keyAlias, null);
+        if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
+            return generateDocumentKeyPair(keyAlias);
         }
         KeyStore.PrivateKeyEntry privateKey = (KeyStore.PrivateKeyEntry) entry;
-        Certificate cert = store.getCertificate(AppConstants.DOCUMENT_KEYALIAS);
+        Certificate cert = store.getCertificate(keyAlias);
         PublicKey publicKey = cert.getPublicKey();
 
         return new KeyPair(publicKey, privateKey.getPrivateKey());
     }
 
-    private Boolean isDocumentKeyPairAvailable() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+    private Boolean isDocumentKeyPairAvailable(String keyAlias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
         KeyStore store = KeyStore.getInstance(AppConstants.ANDROID_KEYSTORE);
         store.load(null);
-        return store.containsAlias(AppConstants.DOCUMENT_KEYALIAS);
+        return store.containsAlias(keyAlias);
     }
 
-    private KeyPair generateDocumentKeyPair() throws InvalidAlgorithmParameterException {
+    private KeyPair generateDocumentKeyPair(String keyAlias) throws InvalidAlgorithmParameterException {
         mKeyPairGenerator.initialize(
             new KeyGenParameterSpec.Builder(
-                    AppConstants.DOCUMENT_KEYALIAS,
-                    KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_ENCRYPT)
+                    keyAlias,
+                    KeyProperties.PURPOSE_SIGN)
                     .setDigests(KeyProperties.DIGEST_SHA256)
                     .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
                     .setKeySize(2048)

@@ -23,6 +23,10 @@ public interface DocumentMvpView extends MvpView {
 
     void showSignerButton();
 
+    void showSignatureDialog();
+
+    void showSignatureButton();
+
     void hideSignerButton();
 
     void signDocument();

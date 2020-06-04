@@ -74,6 +74,7 @@ public class SignDialog extends BaseDialog implements SignDialogMvpView {
             String documentTitle = bundle.getString("document_title");
             mDocumentTitle.setText(documentTitle);
         }
+        if (!mPresenter.isSignatureImageAvailable()) mSignRadioButton.setVisibility(View.INVISIBLE);
         mConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

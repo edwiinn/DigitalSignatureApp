@@ -21,15 +21,10 @@ package com.edwiinn.project.utils;
 
 public final class AppConstants {
 
-    public static final String STATUS_CODE_SUCCESS = "success";
-    public static final String STATUS_CODE_FAILED = "failed";
-
     public static final int API_STATUS_CODE_LOCAL_ERROR = 0;
 
     public static final String DB_NAME = "mindorks_mvp.db";
     public static final String PREF_NAME = "mindorks_pref";
-
-    public static final long NULL_INDEX = -1L;
 
     public static final String SEED_DATABASE_OPTIONS = "seed/options.json";
     public static final String SEED_DATABASE_QUESTIONS = "seed/questions.json";
@@ -38,11 +33,14 @@ public final class AppConstants {
 
     public static final String ANDROID_KEYSTORE = "AndroidKeyStore";
 
-    public static final String DOCUMENT_KEYALIAS = "DocumentKeyAlias";
     public static final String DOCUMENT_SIGNATURE_LOCATION = "Indonesia";
     public static final String DOCUMENT_SIGNATURE_REASON = "Internal Approval";
+    public static final String DOCUMENT_SIGNATURE_FIELD_NAME = "sig";
 
     public static final String CSR_SIGNATURE_ALGORITHM = "SHA256withRSA";
+    public static final String CSR_ATTRIBUTE_ST = "Jawa Timur";
+    public static final String CSR_ATTRIBUTE_C = "ID";
+    public static final String CSR_ATTRIBUTE_L = "Surabaya";
 
     private AppConstants() {
         // This utility class is not publicly instantiable

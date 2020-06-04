@@ -38,10 +38,7 @@ import com.edwiinn.project.di.DatabaseInfo;
 import com.edwiinn.project.di.PreferenceInfo;
 import com.edwiinn.project.utils.AppConstants;
 
-import net.openid.appauth.AuthorizationService;
-
 import java.security.KeyPairGenerator;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
