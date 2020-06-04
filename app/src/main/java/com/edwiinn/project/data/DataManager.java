@@ -15,10 +15,7 @@
 
 package com.edwiinn.project.data;
 
-
-import com.edwiinn.project.data.db.DbHelper;
 import com.edwiinn.project.data.network.ApiHelper;
-import com.edwiinn.project.data.network.model.DocumentsResponse;
 import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.edwiinn.project.data.prefs.PreferencesHelper;
 
@@ -37,15 +34,11 @@ import io.reactivex.Observable;
  * Created by janisharali on 27/01/17.
  */
 
-public interface DataManager extends DbHelper, PreferencesHelper, ApiHelper, AuthStateManager {
+public interface DataManager extends PreferencesHelper, ApiHelper, AuthStateManager {
 
     void updateApiHeader(String userId, String accessToken);
 
     void setUserAsLoggedOut();
-
-    Observable<Boolean> seedDatabaseQuestions();
-
-    Observable<Boolean> seedDatabaseOptions();
 
     void updateUserInfo(
             String accessToken,
@@ -58,7 +51,6 @@ public interface DataManager extends DbHelper, PreferencesHelper, ApiHelper, Aut
     enum LoggedInMode {
 
         LOGGED_IN_MODE_LOGGED_OUT(0),
-        LOGGED_IN_MODE_GOOGLE(1),
         LOGGED_IN_MODE_ITS_SSO(2);
 
         private final int mType;

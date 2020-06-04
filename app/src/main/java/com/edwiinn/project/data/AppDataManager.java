@@ -29,11 +29,6 @@ import com.edwiinn.project.data.prefs.AuthStateManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.$Gson$Types;
-import com.google.gson.reflect.TypeToken;
-import com.edwiinn.project.data.db.DbHelper;
-import com.edwiinn.project.data.db.model.Option;
-import com.edwiinn.project.data.db.model.Question;
-import com.edwiinn.project.data.db.model.User;
 import com.edwiinn.project.data.network.ApiHeader;
 import com.edwiinn.project.data.network.ApiHelper;
 import com.edwiinn.project.data.network.model.LogoutResponse;
@@ -79,19 +74,16 @@ public class AppDataManager implements DataManager {
     private static final String TAG = "AppDataManager";
 
     private final Context mContext;
-    private final DbHelper mDbHelper;
     private final PreferencesHelper mPreferencesHelper;
     private final ApiHelper mApiHelper;
     private final AuthStateManager mAuthStateManager;
 
     @Inject
     public AppDataManager(@ApplicationContext Context context,
-                          DbHelper dbHelper,
                           PreferencesHelper preferencesHelper,
                           ApiHelper apiHelper,
                           AuthStateManager authStateManager) {
         mContext = context;
-        mDbHelper = dbHelper;
         mPreferencesHelper = preferencesHelper;
         mApiHelper = apiHelper;
         mAuthStateManager = authStateManager;
@@ -121,16 +113,6 @@ public class AppDataManager implements DataManager {
     @Override
     public KeyPair getDocumentKeyPair() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableEntryException, InvalidAlgorithmParameterException, IOException {
         return getDocumentKeyPair(getCurrentUserId());
-    }
-
-    @Override
-    public Observable<Long> insertUser(User user) {
-        return mDbHelper.insertUser(user);
-    }
-
-    @Override
-    public Observable<List<User>> getAllUsers() {
-        return mDbHelper.getAllUsers();
     }
 
     @Override
@@ -242,95 +224,6 @@ public class AppDataManager implements DataManager {
                 null,
                 null,
                 null);
-    }
-
-    @Override
-    public Observable<Boolean> isQuestionEmpty() {
-        return mDbHelper.isQuestionEmpty();
-    }
-
-    @Override
-    public Observable<Boolean> isOptionEmpty() {
-        return mDbHelper.isOptionEmpty();
-    }
-
-    @Override
-    public Observable<Boolean> saveQuestion(Question question) {
-        return mDbHelper.saveQuestion(question);
-    }
-
-    @Override
-    public Observable<Boolean> saveOption(Option option) {
-        return mDbHelper.saveOption(option);
-    }
-
-    @Override
-    public Observable<Boolean> saveQuestionList(List<Question> questionList) {
-        return mDbHelper.saveQuestionList(questionList);
-    }
-
-    @Override
-    public Observable<Boolean> saveOptionList(List<Option> optionList) {
-        return mDbHelper.saveOptionList(optionList);
-    }
-
-    @Override
-    public Observable<List<Question>> getAllQuestions() {
-        return mDbHelper.getAllQuestions();
-    }
-
-    @Override
-    public Observable<Boolean> seedDatabaseQuestions() {
-
-        GsonBuilder builder = new GsonBuilder().excludeFieldsWithoutExposeAnnotation();
-        final Gson gson = builder.create();
-
-        return mDbHelper.isQuestionEmpty()
-                .concatMap(new Function<Boolean, ObservableSource<? extends Boolean>>() {
-                    @Override
-                    public ObservableSource<? extends Boolean> apply(Boolean isEmpty)
-                            throws Exception {
-                        if (isEmpty) {
-                            Type type = $Gson$Types
-                                    .newParameterizedTypeWithOwner(null, List.class,
-                                            Question.class);
-                            List<Question> questionList = gson.fromJson(
-                                    CommonUtils.loadJSONFromAsset(mContext,
-                                            AppConstants.SEED_DATABASE_QUESTIONS),
-                                    type);
-
-                            return saveQuestionList(questionList);
-                        }
-                        return Observable.just(false);
-                    }
-                });
-    }
-
-    @Override
-    public Observable<Boolean> seedDatabaseOptions() {
-
-        GsonBuilder builder = new GsonBuilder().excludeFieldsWithoutExposeAnnotation();
-        final Gson gson = builder.create();
-
-        return mDbHelper.isOptionEmpty()
-                .concatMap(new Function<Boolean, ObservableSource<? extends Boolean>>() {
-                    @Override
-                    public ObservableSource<? extends Boolean> apply(Boolean isEmpty)
-                            throws Exception {
-                        if (isEmpty) {
-                            Type type = new TypeToken<List<Option>>() {
-                            }
-                                    .getType();
-                            List<Option> optionList = gson.fromJson(
-                                    CommonUtils.loadJSONFromAsset(mContext,
-                                            AppConstants.SEED_DATABASE_OPTIONS),
-                                    type);
-
-                            return saveOptionList(optionList);
-                        }
-                        return Observable.just(false);
-                    }
-                });
     }
 
     @Override

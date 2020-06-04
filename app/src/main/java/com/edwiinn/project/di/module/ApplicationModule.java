@@ -23,8 +23,6 @@ import com.edwiinn.project.BuildConfig;
 import com.edwiinn.project.R;
 import com.edwiinn.project.data.AppDataManager;
 import com.edwiinn.project.data.DataManager;
-import com.edwiinn.project.data.db.AppDbHelper;
-import com.edwiinn.project.data.db.DbHelper;
 import com.edwiinn.project.data.network.ApiHeader;
 import com.edwiinn.project.data.network.ApiHelper;
 import com.edwiinn.project.data.network.AppApiHelper;
@@ -94,12 +92,6 @@ public class ApplicationModule {
     @Singleton
     DataManager provideDataManager(AppDataManager appDataManager) {
         return appDataManager;
-    }
-
-    @Provides
-    @Singleton
-    DbHelper provideDbHelper(AppDbHelper appDbHelper) {
-        return appDbHelper;
     }
 
     @Provides
