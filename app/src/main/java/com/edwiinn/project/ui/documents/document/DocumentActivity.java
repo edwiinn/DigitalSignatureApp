@@ -349,17 +349,17 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
             issuedAtTxt.setText(format.format(signatureData.getSignDate().getTime()));
             if (!mPresenter.isDocumentModified()){
                 tickImage.setVisibility(View.VISIBLE);
-                crossImage.setVisibility(View.GONE);
+                crossImage.setVisibility(View.INVISIBLE);
                 statusTxt.setText(getResources().getString(R.string.unchanged_signature));
             } else {
-                tickImage.setVisibility(View.GONE);
+                tickImage.setVisibility(View.INVISIBLE);
                 crossImage.setVisibility(View.VISIBLE);
                 statusTxt.setText(getResources().getString(R.string.changed_signature));
             }
         } else {
             issuedByTxt.setText("-");
             issuedAtTxt.setText("-");
-            tickImage.setVisibility(View.GONE);
+            tickImage.setVisibility(View.INVISIBLE);
             crossImage.setVisibility(View.VISIBLE);
         }
         signatureDialog.setVisibility(View.VISIBLE);

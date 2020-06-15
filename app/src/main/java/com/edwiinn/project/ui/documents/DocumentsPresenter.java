@@ -32,6 +32,7 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
     @Override
     public void onViewInitialized() {
         getMvpView().showLoading();
+        Log.d("Keypair", getDataManager().getAccessToken());
         getCompositeDisposable().add(getDataManager()
                 .getAllDocuments()
                 .subscribeOn(getSchedulerProvider().io())
