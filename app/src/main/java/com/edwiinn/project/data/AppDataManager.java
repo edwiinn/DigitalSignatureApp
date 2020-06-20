@@ -207,7 +207,7 @@ public class AppDataManager implements DataManager {
 
     @Override
     public String getSignatureImageLocation() {
-        return mContext.getExternalFilesDir(null).toString() + "/signature/signature.png";
+        return mContext.getExternalFilesDir(null).toString() + "/signature/" + getCurrentUserId() + ".png";
     }
 
     @Override

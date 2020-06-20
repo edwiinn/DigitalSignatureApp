@@ -56,8 +56,8 @@
     <string name="retry">Retry</string>
 
     <!--document-->
-    <string name="unchanged_signature">Dokumen tidak berubah</string>
-    <string name="changed_signature">Dokumen telah dirubah</string>
+    <string name="unchanged_signature">Dokumen valid</string>
+    <string name="changed_signature">Dokumen tidak valid</string>
 
     <!--signer-->
     <string name="sign_confirmation">Apakah anda yakin ingin mendandatangani dokumen tersebut?</string>
