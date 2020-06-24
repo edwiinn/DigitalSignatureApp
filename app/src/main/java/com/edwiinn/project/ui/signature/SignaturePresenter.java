@@ -68,7 +68,6 @@ public class SignaturePresenter<V extends SignatureMvpView> extends BasePresente
             getMvpView().disableCreate();
         } catch (Exception ex) {
             ex.printStackTrace();
-            Log.d("hello", ex.getMessage());
             getMvpView().onError(ex.getMessage());
         }
     }

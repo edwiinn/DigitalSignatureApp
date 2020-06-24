@@ -133,7 +133,7 @@ public class LoginPresenter<V extends LoginMvpView> extends BasePresenter<V>
                         getMvpView().hideLoading();
                     } else {
                         if (tokenResponse != null) {
-                            Log.d("keypaira", tokenResponse.accessToken);
+                            Log.d("Access Token", tokenResponse.accessToken);
                             getDataManager().updateUserInfo(
                                     tokenResponse.tokenType + " " + tokenResponse.accessToken,
                                     null,

@@ -206,6 +206,11 @@ public class AppDataManager implements DataManager {
     }
 
     @Override
+    public String getRootCertificateLocation() {
+        return mContext.getExternalFilesDir(null).toString() + "/certificate/" + "root.cer";
+    }
+
+    @Override
     public String getSignatureImageLocation() {
         return mContext.getExternalFilesDir(null).toString() + "/signature/" + getCurrentUserId() + ".png";
     }

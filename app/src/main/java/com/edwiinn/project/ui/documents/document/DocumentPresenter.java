@@ -14,18 +14,26 @@ import com.edwiinn.project.utils.rx.SchedulerProvider;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.signatures.CertificateVerification;
+import com.itextpdf.signatures.CertificateVerifier;
 import com.itextpdf.signatures.PdfPKCS7;
 import com.itextpdf.signatures.SignatureUtil;
+import com.itextpdf.signatures.VerificationException;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPublicKey;
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -57,9 +65,7 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
             .observeOn(getSchedulerProvider().ui())
             .subscribeWith(new DisposableObserver<String>() {
                 @Override
-                public void onNext(String s) {
-                    Log.d("next", s);
-                }
+                public void onNext(String s) { }
 
                 @Override
                 public void onError(Throwable e) {
@@ -181,7 +187,6 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
         try {
             BouncyCastleProvider provider = new BouncyCastleProvider();
             Security.addProvider(provider);
-            Log.d("Hello", file.getAbsolutePath());
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(file.getAbsolutePath()));
             SignatureUtil signUtil = new SignatureUtil(pdfDoc);
             PdfPKCS7 signatureData = signUtil.readSignatureData(DOCUMENT_SIGNATURE_FIELD_NAME);

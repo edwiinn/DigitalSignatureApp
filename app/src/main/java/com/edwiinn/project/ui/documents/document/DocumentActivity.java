@@ -248,7 +248,6 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
     @Override
     public void showDocument(final File document) {
         try {
-            Log.d("Hello", document.getAbsolutePath());
             PdfDocument doc = new PdfDocument(new PdfReader(document.getAbsolutePath()));
             mDocumentWidthPoint = doc.getFirstPage().getPageSize().getWidth();
             mDocumentHeightPoint = doc.getFirstPage().getPageSize().getHeight();

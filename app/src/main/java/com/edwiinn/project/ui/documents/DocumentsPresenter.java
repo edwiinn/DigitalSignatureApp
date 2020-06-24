@@ -32,7 +32,6 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
     @Override
     public void onViewInitialized() {
         getMvpView().showLoading();
-        Log.d("Keypair", getDataManager().getAccessToken());
         getCompositeDisposable().add(getDataManager()
                 .getAllDocuments()
                 .subscribeOn(getSchedulerProvider().io())
@@ -97,9 +96,7 @@ public class DocumentsPresenter<V extends DocumentsMvpView> extends BasePresente
                 .observeOn(getSchedulerProvider().ui())
                 .subscribeWith(new DisposableObserver<String>() {
                     @Override
-                    public void onNext(String s) {
-                        Log.d("response", s);
-                    }
+                    public void onNext(String s) { }
 
                     @Override
                     public void onError(Throwable e) {

@@ -114,7 +114,6 @@ public class DocumentsActivity extends BaseActivity implements DocumentsMvpView 
 
     @OnClick(R.id.retry_btn)
     public void onRetryClick() {
-        Log.d("Hello", "aaa");
         mPresenter.onViewInitialized();
     }
 

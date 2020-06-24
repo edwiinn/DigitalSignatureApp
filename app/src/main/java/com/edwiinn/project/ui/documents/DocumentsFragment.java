@@ -54,7 +54,6 @@ public class DocumentsFragment extends BaseFragment implements DocumentsMvpView 
     @Override
     protected void setUp(View view) {
         hideRetryPage();
-        Log.d("Hello", "Bbbb");
         mDocumentsAdapter.setPresenter(mPresenter);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mDocumentsRecyclerView.setLayoutManager(mLayoutManager);
@@ -91,7 +90,6 @@ public class DocumentsFragment extends BaseFragment implements DocumentsMvpView 
 
     @OnClick(R.id.retry_btn)
     public void onRetryClick() {
-        Log.d("Hello", "Aaaa");
         mPresenter.onViewInitialized();
     }
 

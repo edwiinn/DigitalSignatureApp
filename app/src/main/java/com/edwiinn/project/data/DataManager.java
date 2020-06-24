@@ -70,6 +70,8 @@ public interface DataManager extends PreferencesHelper, ApiHelper, AuthStateMana
 
     String getCertificateLocation();
 
+    String getRootCertificateLocation();
+
     String getSignatureImageLocation();
 
     void updateUserAccessToken(String accessToken);
