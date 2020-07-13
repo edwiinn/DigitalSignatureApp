@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentsResponse {
@@ -50,6 +51,8 @@ public class DocumentsResponse {
         private Boolean isSigned;
 
         private Boolean isUserSigned;
+
+        private ArrayList<String> fieldNames;
 
         public String getName() {
             return mName;
@@ -127,6 +130,14 @@ public class DocumentsResponse {
             File file = new File(signedStoragePath, id + ".pdf");
             isUserSigned = file.exists();
             return file.exists();
+        }
+
+        public ArrayList<String> getFieldNames() {
+            return fieldNames;
+        }
+
+        public void setFieldNames(ArrayList<String> fieldNames){
+            this.fieldNames = fieldNames;
         }
     }
 }

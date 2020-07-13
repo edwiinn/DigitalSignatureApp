@@ -42,7 +42,9 @@ public class SignaturePresenter<V extends SignatureMvpView> extends BasePresente
                 file.getParentFile().mkdir();
                 file.createNewFile();
             }
+
             Bitmap bitmap = BitmapUtils.replaceWhiteColorToTransparent(getBitmapFromView(signatureBox));
+            bitmap = BitmapUtils.CropBitmapTransparency(bitmap);
             FileOutputStream fos = new FileOutputStream(getDataManager().getSignatureImageLocation());
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();

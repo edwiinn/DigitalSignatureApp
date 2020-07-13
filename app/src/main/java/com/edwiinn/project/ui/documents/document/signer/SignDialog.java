@@ -6,21 +6,27 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 
 import com.edwiinn.project.R;
 import com.edwiinn.project.di.component.ActivityComponent;
 import com.edwiinn.project.ui.base.BaseDialog;
 import com.edwiinn.project.ui.documents.document.DocumentActivity;
+import com.itextpdf.kernel.geom.Line;
 
-import android.content.Intent;
-import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 public class SignDialog extends BaseDialog implements SignDialogMvpView {
@@ -33,16 +39,26 @@ public class SignDialog extends BaseDialog implements SignDialogMvpView {
     @BindView(R.id.confirm_btn)
     Button mConfirmBtn;
 
-    @BindView(R.id.sign_radio)
-    RadioButton mSignRadioButton;
+    @BindView(R.id.sign_checkbox)
+    CheckBox mSignCheckBox;
+
+    @BindView(R.id.fields_group)
+    RadioGroup fieldsGroup;
+
+    @BindView(R.id.defaultposition_radio)
+    RadioButton defaultRadioButton;
+
+    @BindView(R.id.fields_layout)
+    LinearLayout fieldsLayout;
 
     @Inject
     SignDialogMvpPresenter<SignDialogMvpView> mPresenter;
 
-    public static SignDialog newInstance(String documentTitle){
+    public static SignDialog newInstance(String documentTitle, ArrayList<String> fieldNames){
         SignDialog fragment = new SignDialog();
         Bundle bundle = new Bundle();
         bundle.putString("document_title", documentTitle);
+        bundle.putStringArrayList("field_names", fieldNames);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -68,24 +84,53 @@ public class SignDialog extends BaseDialog implements SignDialogMvpView {
     }
 
     @Override
-    protected void setUp(View view) {
+    protected void setUp(final View view) {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             String documentTitle = bundle.getString("document_title");
+            ArrayList<String> fieldNames = bundle.getStringArrayList("field_names");
             mDocumentTitle.setText(documentTitle);
+            for (int i = 0; i < fieldNames.size(); i++){
+                RadioButton checkRadio = new RadioButton(getContext());
+                checkRadio.setId(i);
+                checkRadio.setText(fieldNames.get(i));
+                fieldsGroup.addView(checkRadio);
+            }
         }
-        if (!mPresenter.isSignatureImageAvailable()) mSignRadioButton.setVisibility(View.INVISIBLE);
+        if (!mPresenter.isSignatureImageAvailable()) mSignCheckBox.setVisibility(View.INVISIBLE);
+        onCheckChangedRadioCheckbox(mSignCheckBox, mSignCheckBox.isChecked());
+
         mConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mSignRadioButton.isChecked()) {
-                    ((DocumentActivity) getActivity()).signDocumentWithElectronicSignature();
+                if (mSignCheckBox.isChecked()) {
+                    handleRadioGroupResponse(view);
                 } else {
                     ((DocumentActivity) getActivity()).signDocument();
                 }
                 getActivity().onBackPressed();
             }
         });
+    }
+
+    @OnCheckedChanged(R.id.sign_checkbox)
+    public void onCheckChangedRadioCheckbox(CompoundButton button, boolean bool) {
+        if (bool) {
+            defaultRadioButton.setChecked(true);
+            fieldsLayout.setVisibility(View.VISIBLE);
+        } else {
+            fieldsLayout.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void handleRadioGroupResponse(View view){
+        Integer radioButtonId = fieldsGroup.getCheckedRadioButtonId();
+        RadioButton selectedRadio = ButterKnife.findById(view, radioButtonId);
+        if (selectedRadio.getId() == R.id.defaultposition_radio){
+            ((DocumentActivity) getActivity()).signDocumentWithElectronicSignature();
+        } else {
+            ((DocumentActivity) getActivity()).signDocumentAtFieldName(selectedRadio.getText().toString());
+        }
     }
 
     @Override

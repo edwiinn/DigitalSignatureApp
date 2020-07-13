@@ -33,6 +33,8 @@ public interface DocumentMvpView extends MvpView {
 
     void signDocumentWithElectronicSignature();
 
+    void signDocumentAtFieldName(String fieldName);
+
     void updateSignatureImage(Bitmap bitmap);
 
     void closeActivity();

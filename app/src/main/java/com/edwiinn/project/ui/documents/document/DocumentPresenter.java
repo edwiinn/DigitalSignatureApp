@@ -11,7 +11,11 @@ import com.edwiinn.project.utils.AppConstants;
 import com.edwiinn.project.utils.CertificationUtils;
 import com.edwiinn.project.utils.CommonUtils;
 import com.edwiinn.project.utils.rx.SchedulerProvider;
+import com.github.barteksc.pdfviewer.util.FileUtils;
+import com.itextpdf.forms.PdfAcroForm;
+import com.itextpdf.forms.fields.PdfFormField;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.signatures.CertificateVerification;
@@ -24,7 +28,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -34,7 +41,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
@@ -81,7 +90,6 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
                 }
             })
         );
-
         File signatureImageFile = new File(getDataManager().getSignatureImageLocation());
         if (signatureImageFile.exists()){
             Bitmap signatureImageBitmap = BitmapFactory.decodeFile(signatureImageFile.getAbsolutePath());
@@ -98,6 +106,18 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
         File userSignedDocumentFile = new File(getDataManager().getSignedDocumentsStorageLocation(), document.getId() + ".pdf");
         if(document.getUserSigned() && !document.getSigned() && userSignedDocumentFile.exists()){
             documentFile = userSignedDocumentFile;
+        }
+        String src = getDataManager().getDocumentsStorageLocation() + "/" + document.getId()  + ".pdf";
+        Log.i("hello", "onDocumentLoad: " + new File(src).exists());
+        try {
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
+            PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDoc, false);
+            Map<String, PdfFormField> fields = form.getFormFields();
+            ArrayList<String> fieldNames = new ArrayList<>(fields.keySet());
+            Log.i("hello", "onDocumentLoad: " + fieldNames);
+            document.setFieldNames(fieldNames);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         getMvpView().showDocument(documentFile);
         getMvpView().registerSignatureImageBehaviour();
@@ -155,7 +175,35 @@ public class DocumentPresenter<V extends DocumentMvpView> extends BasePresenter<
         }
         getMvpView().hideLoading();
         getMvpView().closeActivity();
+    }
 
+    @Override
+    public void onDocumentSignWithFieldName(String fieldname) {
+        getMvpView().showLoading();
+        DocumentsResponse.Document document = getMvpView().getDocument();
+        try {
+            KeyPair kp = getDataManager().getDocumentKeyPair();
+            String documentSrc = getDataManager().getDocumentsStorageLocation() + "/" + document.getId() + ".pdf";
+            String documentDst = getDataManager().getSignedDocumentsStorageLocation() + "/" + document.getId() + ".pdf";
+            String certificatePem = CommonUtils.usingBufferedReader(getDataManager().getCertificateLocation());
+            X509Certificate certificate = CertificationUtils.toX509Format(certificatePem);
+            File file = new File(documentDst);
+            if (!file.exists()) {
+                file.getParentFile().mkdir();
+                file.createNewFile();
+            }
+            Certificate[] chain = { certificate };
+            CertificationUtils.signAtSignatureField(documentSrc, documentDst, chain, kp.getPrivate(), getDataManager().getSignatureImageLocation(), fieldname);
+            getMvpView().showMessage("Dokumen " + document.getName() + " berhasil di tanda tangani");
+        } catch (Exception exception) {
+            File file = new File(getDataManager().getSignedDocumentsStorageLocation(), document.getId() + ".pdf");
+            file.delete();
+            getMvpView().showMessage(exception.getMessage());
+            getMvpView().onError(exception.getMessage());
+            exception.printStackTrace();
+        }
+        getMvpView().hideLoading();
+        getMvpView().closeActivity();
     }
 
     @Override

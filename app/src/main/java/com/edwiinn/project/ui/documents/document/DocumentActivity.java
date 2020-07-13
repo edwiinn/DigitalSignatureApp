@@ -37,6 +37,7 @@ import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnDrawListener;
 import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
 import com.github.barteksc.pdfviewer.listener.OnTapListener;
+import com.github.barteksc.pdfviewer.util.FitPolicy;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Point;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -222,9 +223,10 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
     }
 
     private Point getImagePdfCoordinates() {
-        float marginPdf = documentPdfView.getHeight() - pdfCanvasHeight;
-        float imagePdfX = ScreenUtils.parsePixelToPoint(signatureImage.getX(), xScale);
-        float imagePdfY = mDocumentHeightPoint - ScreenUtils.parsePixelToPoint(signatureImage.getY() + signatureImage.getHeight() - ((marginPdf / 2) + appBar.getHeight()) , yScale);
+        float marginPdfY = documentPdfView.getHeight() - pdfCanvasHeight;
+        float marginPdfX = documentPdfView.getWidth() - pdfCanvasWidth;
+        float imagePdfX = ScreenUtils.parsePixelToPoint(signatureImage.getX() - marginPdfX / 2, xScale);
+        float imagePdfY = mDocumentHeightPoint - ScreenUtils.parsePixelToPoint(signatureImage.getY() + signatureImage.getHeight() - ((marginPdfY / 2) + appBar.getHeight()) , yScale);
         return new Point(imagePdfX, imagePdfY);
     }
 
@@ -283,6 +285,7 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
                     }
                 })
                 .swipeHorizontal(false)
+                .pageFitPolicy(FitPolicy.BOTH)
                 .pageSnap(true)
                 .autoSpacing(true)
                 .pageFling(true)
@@ -294,7 +297,7 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
 
     @Override
     public void showSignerDialog() {
-        SignDialog.newInstance(getDocument().getName()).show(getSupportFragmentManager());
+        SignDialog.newInstance(getDocument().getName(), getDocument().getFieldNames()).show(getSupportFragmentManager());
     }
 
     public void loadDocument() {
@@ -398,6 +401,11 @@ public class DocumentActivity extends BaseActivity implements DocumentMvpView {
                 signatureImage.getHeight() * yScale,
                 documentPdfView.getCurrentPage() + 1
         );
+    }
+
+    @Override
+    public void signDocumentAtFieldName(String fieldName) {
+        mPresenter.onDocumentSignWithFieldName(fieldName);
     }
 
     @Override
